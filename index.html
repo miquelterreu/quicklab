@@ -522,4 +522,113 @@
                 const pdfBytes = await mergedPdf.save();
                 downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'pdf-unido.pdf');
             } catch (err) {
-                alert("
+                alert("Error uniendo archivos PDF: " + err.message);
+            }
+        }
+
+        let currentLoadedImage = null;
+
+        function handleImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    currentLoadedImage = img;
+                    document.getElementById('preview-img').src = e.target.result;
+                    document.getElementById('image-editor').classList.remove('hidden');
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function updateQualityVal(val) {
+            document.getElementById('quality-val').innerText = `${val}%`;
+        }
+
+        function processImage() {
+            if (!currentLoadedImage) return;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = currentLoadedImage.width;
+            canvas.height = currentLoadedImage.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(currentLoadedImage, 0, 0);
+
+            const quality = parseFloat(document.getElementById('quality-range').value) / 100;
+            const format = document.getElementById('format-select').value;
+
+            canvas.toBlob((blob) => {
+                const ext = format.split('/')[1];
+                downloadBlob(blob, `imagen-optimizada.${ext}`);
+            }, format, quality);
+        }
+
+        let qrCodeObj = null;
+
+        function generateQR() {
+            const text = document.getElementById('qr-input').value;
+            if (!text.trim()) return;
+
+            const container = document.getElementById('qrcode');
+            container.innerHTML = '';
+
+            qrCodeObj = new QRCode(container, {
+                text: text,
+                width: 160,
+                height: 160,
+                colorDark : "#312e81",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('qr-result-container').classList.remove('hidden');
+        }
+
+        function downloadQR() {
+            const img = document.querySelector('#qrcode img');
+            if (img) {
+                const a = document.createElement('a');
+                a.href = img.src;
+                a.download = 'codigo-qr.png';
+                a.click();
+            }
+        }
+
+        function generateWALink() {
+            const phone = document.getElementById('wa-phone').value.replace(/[^0-9]/g, '');
+            const msg = encodeURIComponent(document.getElementById('wa-msg').value);
+            
+            if (!phone) {
+                alert('Introduce un número de teléfono válido.');
+                return;
+            }
+
+            const link = `https://wa.me/${phone}${msg ? '?text=' + msg : ''}`;
+            document.getElementById('wa-output-link').value = link;
+            document.getElementById('wa-result-container').classList.remove('hidden');
+        }
+
+        function copyToClipboard(elementId) {
+            const el = document.getElementById(elementId);
+            el.select();
+            document.execCommand('copy');
+            alert('¡Copiado al portapapeles!');
+        }
+
+        function downloadBlob(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
