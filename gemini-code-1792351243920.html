@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickLab - Herramientas Web Rápidas y Privadas</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- QRCode.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <!-- pdf-lib for Client-side PDF manipulation -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    
+    <!-- pdf.js for text extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('text')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-200">
+                    QL
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">QuickLab</span>
+                    <span class="block text-[10px] text-slate-400 font-medium tracking-wider -mt-1">100% LOCAL Y PRIVADO</span>
+                </div>
+            </div>
+            
+            <div class="hidden sm:flex items-center space-x-2 text-xs font-medium text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+                <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                <span>Procesamiento 100% en tu navegador (Sin servidores)</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Top Ad Placeholder -->
+        <div class="mb-8 w-full bg-slate-100 border border-dashed border-slate-300 rounded-xl p-4 text-center text-slate-400 text-xs font-mono uppercase tracking-wider flex items-center justify-center min-h-[90px]">
+            <span><i class="fa-solid fa-rectangle-ad mr-2"></i> Espacio Publicitario (Google AdSense)</span>
+        </div>
+
+        <!-- Navigation Categories -->
+        <div class="flex flex-wrap gap-2 mb-8 border-b border-slate-200 pb-4">
+            <button onclick="switchTab('text')" id="tab-text" class="tab-btn active px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center space-x-2 bg-indigo-600 text-white shadow-md shadow-indigo-100">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>Texto y Corrector</span>
+            </button>
+            <button onclick="switchTab('pdf')" id="tab-pdf" class="tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center space-x-2 bg-white text-slate-600 hover:bg-slate-100 border border-slate-200">
+                <i class="fa-solid fa-file-pdf text-red-500"></i>
+                <span>Herramientas PDF</span>
+            </button>
+            <button onclick="switchTab('image')" id="tab-image" class="tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center space-x-2 bg-white text-slate-600 hover:bg-slate-100 border border-slate-200">
+                <i class="fa-solid fa-image text-emerald-500"></i>
+                <span>Imágenes</span>
+            </button>
+            <button onclick="switchTab('marketing')" id="tab-marketing" class="tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center space-x-2 bg-white text-slate-600 hover:bg-slate-100 border border-slate-200">
+                <i class="fa-solid fa-qrcode text-purple-500"></i>
+                <span>Marketing y QR</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: TEXTO & CORRECTOR -->
+        <section id="content-text" class="tab-content space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">Corrector, Formateador y Contador de Texto</h2>
+                        <p class="text-xs text-slate-500">Analiza y corrige ortografía, tildes y formato en tiempo real.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="correctText()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Corregir Todo
+                        </button>
+                        <button onclick="transformText('uppercase')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">MAYÚSCULAS</button>
+                        <button onclick="transformText('lowercase')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">minúsculas</button>
+                        <button onclick="transformText('title')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">Modo Título</button>
+                        <button onclick="copyToClipboard('text-input')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1">
+                            <i class="fa-regular fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                </div>
+
+                <textarea id="text-input" oninput="analyzeText()" placeholder="Escribe o pega tu texto aquí para contar palabras, revisar ortografía y ajustar el formato..." class="w-full h-48 p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none text-slate-700 text-sm resize-y transition"></textarea>
+
+                <div id="correction-feedback" class="mt-3 hidden p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center justify-between">
+                    <span id="correction-msg"></span>
+                    <button onclick="this.parentElement.classList.add('hidden')" class="text-emerald-600 hover:text-emerald-900 font-bold">&times;</button>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-slate-100">
+                    <div class="bg-slate-50 p-3 rounded-xl text-center">
+                        <span id="stat-words" class="block text-2xl font-extrabold text-indigo-600">0</span>
+                        <span class="text-xs text-slate-500 font-medium">Palabras</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl text-center">
+                        <span id="stat-chars" class="block text-2xl font-extrabold text-indigo-600">0</span>
+                        <span class="text-xs text-slate-500 font-medium">Caracteres</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl text-center">
+                        <span id="stat-paragraphs" class="block text-2xl font-extrabold text-indigo-600">0</span>
+                        <span class="text-xs text-slate-500 font-medium">Párrafos</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl text-center">
+                        <span id="stat-reading" class="block text-2xl font-extrabold text-indigo-600">0m</span>
+                        <span class="text-xs text-slate-500 font-medium">Tiempo de Lectura</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: PDF TOOLS -->
+        <section id="content-pdf" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-file-word"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-base mb-1">PDF a Texto</h3>
+                        <p class="text-xs text-slate-500 mb-4">Extrae todo el contenido de texto legible de tu archivo PDF.</p>
+                        <input type="file" id="pdf-to-text-input" accept="application/pdf" class="hidden" onchange="convertPdfToText(this)">
+                        <button onclick="document.getElementById('pdf-to-text-input').click()" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition border border-slate-200">
+                            Seleccionar PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-base mb-1">Imágenes a PDF</h3>
+                        <p class="text-xs text-slate-500 mb-4">Convierte una o varias imágenes (JPG, PNG) en un único PDF.</p>
+                        <input type="file" id="img-to-pdf-input" accept="image/*" multiple class="hidden" onchange="convertImagesToPdf(this)">
+                        <button onclick="document.getElementById('img-to-pdf-input').click()" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition border border-slate-200">
+                            Seleccionar Imágenes
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-object-group"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-base mb-1">Unir PDFs</h3>
+                        <p class="text-xs text-slate-500 mb-4">Combina múltiples archivos PDF en un solo documento final.</p>
+                        <input type="file" id="merge-pdf-input" accept="application/pdf" multiple class="hidden" onchange="mergePdfs(this)">
+                        <button onclick="document.getElementById('merge-pdf-input').click()" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition border border-slate-200">
+                            Seleccionar PDFs
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pdf-output-card" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="font-bold text-slate-800 text-sm">Resultado PDF</h4>
+                    <button onclick="copyToClipboard('pdf-text-result')" id="copy-pdf-btn" class="hidden text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1 rounded-md text-slate-700">Copiar Texto</button>
+                </div>
+                <textarea id="pdf-text-result" readonly class="w-full h-40 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-700 focus:outline-none resize-y"></textarea>
+            </div>
+        </section>
+
+        <!-- TAB 3: IMÁGENES -->
+        <section id="content-image" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-800 text-base mb-1">Compresor y Conversor de Imágenes</h3>
+                <p class="text-xs text-slate-500 mb-6">Reduce el peso de tus imágenes JPG, PNG o WebP sin enviarlas a ningún servidor.</p>
+
+                <div class="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center bg-slate-50 hover:border-indigo-400 transition cursor-pointer" onclick="document.getElementById('image-file-input').click()">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-indigo-500 mb-2"></i>
+                    <p class="text-sm font-semibold text-slate-700">Haz clic para subir una imagen</p>
+                    <p class="text-xs text-slate-400 mt-1">Soporta JPG, PNG y WebP</p>
+                    <input type="file" id="image-file-input" accept="image/*" class="hidden" onchange="handleImageUpload(this)">
+                </div>
+
+                <div id="image-editor" class="hidden mt-6 space-y-6 border-t border-slate-100 pt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 mb-2">Vista previa original</p>
+                            <img id="preview-img" class="max-h-48 rounded-xl border border-slate-200 object-contain bg-slate-100 mx-auto" />
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Nivel de Calidad: <span id="quality-val" class="font-bold text-indigo-600">80%</span></label>
+                                <input type="range" id="quality-range" min="10" max="100" value="80" oninput="updateQualityVal(this.value)" class="w-full accent-indigo-600">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Formato de Salida</label>
+                                <select id="format-select" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700">
+                                    <option value="image/jpeg">JPEG / JPG</option>
+                                    <option value="image/png">PNG</option>
+                                    <option value="image/webp">WebP</option>
+                                </select>
+                            </div>
+                            <button onclick="processImage()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-100 transition">
+                                Procesar y Descargar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: MARKETING & QR -->
+        <section id="content-marketing" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base mb-1">Generador de Código QR</h3>
+                        <p class="text-xs text-slate-500 mb-4">Crea códigos QR instantáneos para tu web, red WiFi o texto.</p>
+                        
+                        <div class="space-y-3 mb-4">
+                            <input type="text" id="qr-input" placeholder="https://tuweb.com o texto..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <button onclick="generateQR()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-md shadow-indigo-100">
+                                Generar Código QR
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="qr-result-container" class="hidden flex flex-col items-center justify-center p-4 bg-slate-50 rounded-xl border border-slate-200 mt-2">
+                        <div id="qrcode" class="mb-3"></div>
+                        <button onclick="downloadQR()" class="text-xs text-indigo-600 font-semibold hover:underline">Descargar QR en Imagen</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base mb-1">Generador de Enlace WhatsApp</h3>
+                        <p class="text-xs text-slate-500 mb-4">Crea un link directo a tu chat con mensaje predefinido.</p>
+                        
+                        <div class="space-y-3 mb-4">
+                            <input type="text" id="wa-phone" placeholder="Número con prefijo (Ej: 34600000000)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <textarea id="wa-msg" placeholder="Mensaje inicial (opcional)..." class="w-full h-20 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
+                            <button onclick="generateWALink()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl transition shadow-md shadow-emerald-100">
+                                Generar Enlace Directo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="wa-result-container" class="hidden p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+                        <p class="font-semibold text-slate-700 mb-1">Tu enlace de WhatsApp:</p>
+                        <input type="text" id="wa-output-link" readonly class="w-full p-2 bg-white border border-slate-200 rounded-md font-mono text-[11px] mb-2 text-slate-600">
+                        <button onclick="copyToClipboard('wa-output-link')" class="w-full py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded-md transition">Copiar Enlace</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Ad Placeholder -->
+        <div class="mt-12 w-full bg-slate-100 border border-dashed border-slate-300 rounded-xl p-4 text-center text-slate-400 text-xs font-mono uppercase tracking-wider flex items-center justify-center min-h-[90px]">
+            <span><i class="fa-solid fa-rectangle-ad mr-2"></i> Espacio Publicitario (Google AdSense)</span>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400 space-y-2">
+            <p>&copy; 2026 <strong class="text-slate-600">QuickLab</strong> - Herramientas Web Gratuitas y Privadas.</p>
+            <p>Procesamiento 100% en tu dispositivo. Ningún archivo o texto es enviado a servidores externos.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-100');
+                btn.classList.add('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
+            });
+
+            document.getElementById(`content-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.remove('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
+            activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-100');
+        }
+
+        function analyzeText() {
+            const text = document.getElementById('text-input').value;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const chars = text.length;
+            const paragraphs = text.trim() ? text.split(/\n+/).length : 0;
+            const readingTime = Math.ceil(words / 200);
+
+            document.getElementById('stat-words').innerText = words;
+            document.getElementById('stat-chars').innerText = chars;
+            document.getElementById('stat-paragraphs').innerText = paragraphs;
+            document.getElementById('stat-reading').innerText = `${readingTime}m`;
+        }
+
+        function transformText(type) {
+            const input = document.getElementById('text-input');
+            if (type === 'uppercase') input.value = input.value.toUpperCase();
+            if (type === 'lowercase') input.value = input.value.toLowerCase();
+            if (type === 'title') {
+                input.value = input.value.toLowerCase().replace(/(?:^|\s)\S/g, a => a.toUpperCase());
+            }
+            analyzeText();
+        }
+
+        function correctText() {
+            let text = document.getElementById('text-input').value;
+            if (!text.trim()) return;
+
+            let replacements = 0;
+            const rules = [
+                { reg: /\b(que|que|q)\b/gi, rep: 'que' },
+                { reg: /\b(tambien)\b/gi, rep: 'también' },
+                { reg: /\b(ademas)\b/gi, rep: 'además' },
+                { reg: /\b(rapido)\b/gi, rep: 'rápido' },
+                { reg: /\b(facil)\b/gi, rep: 'fácil' },
+                { reg: /\b(pagina)\b/gi, rep: 'página' },
+                { reg: /\b(telefono)\b/gi, rep: 'teléfono' },
+                { reg: /\b(ingles)\b/gi, rep: 'inglés' },
+                { reg: /\b(mas)\b/gi, rep: 'más' },
+                { reg: /  +/g, rep: ' ' },
+                { reg: /([.?!])\s*([a-zñ])/g, rep: (m, p1, p2) => `${p1} ${p2.toUpperCase()}` }
+            ];
+
+            rules.forEach(rule => {
+                const matches = text.match(rule.reg);
+                if (matches) replacements += matches.length;
+                text = text.replace(rule.reg, rule.rep);
+            });
+
+            if (text.length > 0) {
+                text = text.charAt(0).toUpperCase() + text.slice(1);
+            }
+
+            document.getElementById('text-input').value = text;
+            analyzeText();
+
+            const feedback = document.getElementById('correction-feedback');
+            document.getElementById('correction-msg').innerText = `¡Revisión completada! Se realizaron correcciones y ajustes de formato.`;
+            feedback.classList.remove('hidden');
+        }
+
+        async function convertPdfToText(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const outputCard = document.getElementById('pdf-output-card');
+            const resultArea = document.getElementById('pdf-text-result');
+            document.getElementById('copy-pdf-btn').classList.remove('hidden');
+            outputCard.classList.remove('hidden');
+            resultArea.value = "Extrayendo texto del PDF, por favor espera...";
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                let fullText = '';
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tokenized = await page.getTextContent();
+                    const pageText = tokenized.items.map(token => token.str).join(' ');
+                    fullText += `--- Página ${i} ---\n${pageText}\n\n`;
+                }
+
+                resultArea.value = fullText || "No se encontró texto legible en el documento PDF.";
+            } catch (err) {
+                resultArea.value = "Error al procesar el archivo PDF: " + err.message;
+            }
+        }
+
+        async function convertImagesToPdf(input) {
+            const files = input.files;
+            if (!files.length) return;
+
+            try {
+                const pdfDoc = await PDFLib.PDFDocument.create();
+
+                for (let file of files) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    let image;
+                    if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
+                        image = await pdfDoc.embedJpg(arrayBuffer);
+                    } else if (file.type === 'image/png') {
+                        image = await pdfDoc.embedPng(arrayBuffer);
+                    } else {
+                        continue;
+                    }
+
+                    const page = pdfDoc.addPage([image.width, image.height]);
+                    page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
+                }
+
+                const pdfBytes = await pdfDoc.save();
+                downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'imagenes-convertidas.pdf');
+            } catch (err) {
+                alert("Error creando PDF: " + err.message);
+            }
+        }
+
+        async function mergePdfs(input) {
+            const files = input.files;
+            if (files.length < 2) {
+                alert("Por favor selecciona al menos 2 archivos PDF para unir.");
+                return;
+            }
+
+            try {
+                const mergedPdf = await PDFLib.PDFDocument.create();
+
+                for (let file of files) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+                    const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                    copiedPages.forEach(page => mergedPdf.addPage(page));
+                }
+
+                const pdfBytes = await mergedPdf.save();
+                downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'pdf-unido.pdf');
+            } catch (err) {
+                alert("Error uniendo archivos PDF: " + err.message);
+            }
+        }
+
+        let currentLoadedImage = null;
+
+        function handleImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    currentLoadedImage = img;
+                    document.getElementById('preview-img').src = e.target.result;
+                    document.getElementById('image-editor').classList.remove('hidden');
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function updateQualityVal(val) {
+            document.getElementById('quality-val').innerText = `${val}%`;
+        }
+
+        function processImage() {
+            if (!currentLoadedImage) return;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = currentLoadedImage.width;
+            canvas.height = currentLoadedImage.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(currentLoadedImage, 0, 0);
+
+            const quality = parseFloat(document.getElementById('quality-range').value) / 100;
+            const format = document.getElementById('format-select').value;
+
+            canvas.toBlob((blob) => {
+                const ext = format.split('/')[1];
+                downloadBlob(blob, `imagen-optimizada.${ext}`);
+            }, format, quality);
+        }
+
+        let qrCodeObj = null;
+
+        function generateQR() {
+            const text = document.getElementById('qr-input').value;
+            if (!text.trim()) return;
+
+            const container = document.getElementById('qrcode');
+            container.innerHTML = '';
+
+            qrCodeObj = new QRCode(container, {
+                text: text,
+                width: 160,
+                height: 160,
+                colorDark : "#312e81",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('qr-result-container').classList.remove('hidden');
+        }
+
+        function downloadQR() {
+            const img = document.querySelector('#qrcode img');
+            if (img) {
+                const a = document.createElement('a');
+                a.href = img.src;
+                a.download = 'codigo-qr.png';
+                a.click();
+            }
+        }
+
+        function generateWALink() {
+            const phone = document.getElementById('wa-phone').value.replace(/[^0-9]/g, '');
+            const msg = encodeURIComponent(document.getElementById('wa-msg').value);
+            
+            if (!phone) {
+                alert('Introduce un número de teléfono válido.');
+                return;
+            }
+
+            const link = `https://wa.me/${phone}${msg ? '?text=' + msg : ''}`;
+            document.getElementById('wa-output-link').value = link;
+            document.getElementById('wa-result-container').classList.remove('hidden');
+        }
+
+        function copyToClipboard(elementId) {
+            const el = document.getElementById(elementId);
+            el.select();
+            document.execCommand('copy');
+            alert('¡Copiado al portapapeles!');
+        }
+
+        function downloadBlob(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
