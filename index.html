@@ -1,634 +1,819 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuickLab - Herramientas Web Rápidas y Privadas</title>
-
-    <!-- Google AdSense Code -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6711921675380350"
-         crossorigin="anonymous"></script>
-    
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- QRCode.js library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    
-    <!-- pdf-lib for Client-side PDF manipulation -->
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    
-    <!-- pdf.js for text extraction -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-    </script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0f3ff',
-                            100: '#e0e7ff',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            900: '#312e81',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101014">
+<meta name="description" content="Aplicación de estudio de chino con vocabulario, diálogos, gramática, dictados y simulacros de Integrated Chinese, temas 5 y 6.">
+<title>¡Aprueba Chino! · Integrated Chinese 5 y 6</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #101014;
+  --panel: #19191f;
+  --panel-2: #202027;
+  --sidebar: #141419;
+  --line: #30303a;
+  --text: #f6f6f8;
+  --muted: #aaaab5;
+  --red: #ff5147;
+  --red-soft: rgba(255,81,71,.13);
+  --blue: #72d5ff;
+  --green: #45d483;
+  --gold: #ffd66b;
+  --yellow-soft: rgba(255,214,107,.12);
+  --radius: 16px;
+  --shadow: 0 14px 34px rgba(0,0,0,.2);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 3px solid rgba(114,213,255,.75); outline-offset: 2px; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.app-shell { min-height: 100vh; display: grid; grid-template-columns: 280px minmax(0,1fr); }
+.sidebar {
+  background: var(--sidebar); border-right: 1px solid var(--line); padding: 24px 16px;
+  display: flex; flex-direction: column; gap: 10px; min-height: 100vh; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.brand { text-align: center; padding: 4px 8px 14px; }
+.brand-title { color: var(--red); font-size: 23px; font-weight: 900; letter-spacing: -.7px; }
+.brand-subtitle { color: var(--gold); font-size: 10px; font-weight: 800; letter-spacing: 1.1px; margin-top: 3px; }
+.theme-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 5px; border: 1px solid var(--line); background: var(--panel); border-radius: 12px; margin: 0 0 10px; }
+.theme-btn, .nav-btn, .small-btn, .mode-btn, .option-btn, .action-btn {
+  border: 1px solid var(--line); border-radius: 11px; background: var(--panel); color: var(--text); transition: background .16s,border-color .16s,transform .16s;
+}
+.theme-btn { padding: 10px 8px; color: var(--muted); font-weight: 800; }
+.theme-btn.active { background: var(--red); border-color: var(--red); color: white; }
+.nav-list { display: grid; gap: 7px; }
+.nav-btn { display: flex; align-items: center; gap: 11px; text-align: left; width: 100%; padding: 11px 13px; font-weight: 650; font-size: 13px; }
+.nav-btn:hover, .nav-btn.active { border-color: var(--red); background: var(--red-soft); color: #ff827b; }
+.nav-btn .nav-icon { width: 23px; text-align: center; font-size: 18px; }
+.sidebar-note { margin-top: auto; padding: 12px; border: 1px solid var(--line); border-radius: 12px; color: var(--muted); font-size: 11px; }
+.main { width: 100%; max-width: 1100px; margin: 0 auto; padding: 28px clamp(16px,3vw,38px) 60px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 22px; }
+.topbar h1 { font-size: clamp(21px,3vw,29px); margin: 0; letter-spacing: -.5px; }
+.topbar p { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+.topbar-chip { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 7px 12px; color: var(--gold); font-weight: 750; font-size: 12px; white-space: nowrap; }
+.section { display: none; animation: appear .18s ease-out; }
+.section.active { display: block; }
+@keyframes appear { from { opacity: .65; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 19px; margin-bottom: 14px; box-shadow: var(--shadow); }
+.card h2, .card h3 { margin: 0 0 10px; }
+.card h2 { font-size: 18px; }
+.card h3 { font-size: 15px; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.kicker { color: var(--gold); font-size: 10px; letter-spacing: 1px; font-weight: 850; text-transform: uppercase; }
+.welcome {
+  background: radial-gradient(circle at 90% 10%, rgba(255,81,71,.18), transparent 36%), var(--panel);
+  border-color: rgba(255,81,71,.35); padding: 24px;
+}
+.welcome h2 { color: var(--red); font-size: 24px; margin: 4px 0 8px; }
+.welcome p { color: var(--muted); max-width: 720px; margin: 0; font-size: 14px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
+.stat { background: var(--panel-2); border: 1px solid var(--line); border-radius: 13px; padding: 14px; }
+.stat strong { display: block; font-size: 25px; line-height: 1.2; }
+.stat span { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
+.progress-track { height: 9px; background: #303039; border-radius: 99px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg,var(--red),#ff9a61); width: 0; transition: width .25s; }
+.section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; margin-bottom: 14px; }
+.section-heading h2 { margin: 0; font-size: 21px; }
+.section-heading p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+.search, .text-input {
+  width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-2); color: var(--text);
+  padding: 13px 14px; margin: 8px 0 12px; outline: none;
+}
+.search:focus, .text-input:focus { border-color: var(--blue); }
+.switch-row, .mode-row { display: flex; gap: 6px; padding: 5px; background: #111116; border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; margin-bottom: 12px; }
+.mode-btn { white-space: nowrap; flex: 1; padding: 8px 11px; border-radius: 9px; color: var(--muted); font-size: 12px; font-weight: 750; }
+.mode-btn.active { background: var(--red); border-color: var(--red); color: white; }
+.dict-card { border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 15px; margin-bottom: 10px; }
+.dict-head { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 12px; align-items: center; }
+.word-meta { color: var(--gold); font-size: 10px; font-weight: 800; margin-bottom: 3px; }
+.word-hanzi { color: var(--red); font-weight: 850; font-size: 27px; line-height: 1.25; }
+.word-pinyin { color: var(--blue); font-size: 13px; font-weight: 700; margin-left: 5px; }
+.word-meaning { font-size: 13px; font-weight: 650; text-align: right; max-width: 220px; }
+.dict-actions { display: flex; gap: 7px; margin-top: 11px; }
+.small-btn { padding: 7px 10px; font-size: 11px; font-weight: 750; color: var(--muted); }
+.small-btn:hover { border-color: var(--blue); color: var(--blue); }
+.example { display: none; margin-top: 12px; padding: 12px; background: #111116; border: 1px dashed var(--line); border-radius: 10px; }
+.example.open { display: block; }
+.example .zh { font-size: 18px; font-weight: 800; }
+.example .py { color: var(--blue); font-size: 12px; margin-top: 2px; }
+.example .es { color: var(--muted); font-size: 12px; margin-top: 3px; }
+.empty-state { text-align: center; color: var(--muted); padding: 28px 10px; border: 1px dashed var(--line); border-radius: 14px; }
+.story-card { border: 1px solid var(--line); background: var(--panel); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; }
+.story-title { color: var(--red); font-size: 17px; font-weight: 850; margin-bottom: 12px; }
+.story-line { padding: 12px 2px; border-bottom: 1px dashed var(--line); display: flex; align-items: flex-start; gap: 12px; }
+.story-line:last-child { border-bottom: 0; }
+.story-line-content { min-width: 0; flex: 1; }
+.story-zh { font-size: 19px; font-weight: 800; }
+.story-py { color: var(--blue); font-size: 12px; margin-top: 3px; }
+.story-es { color: var(--muted); font-size: 12px; margin-top: 3px; }
+.audio-btn { flex: 0 0 auto; width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); color: var(--blue); }
+.audio-btn:hover { border-color: var(--blue); }
+.action-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.action-btn { padding: 11px 14px; font-weight: 750; font-size: 13px; }
+.action-btn.primary { background: var(--red); border-color: var(--red); color: #fff; }
+.action-btn.good { background: rgba(69,212,131,.12); border-color: rgba(69,212,131,.55); color: var(--green); }
+.action-btn.bad { background: var(--red-soft); border-color: rgba(255,81,71,.55); color: #ff827b; }
+.action-btn.ghost { color: var(--muted); }
+.action-btn:hover:not(:disabled) { transform: translateY(-1px); }
+.flash-card { min-height: 270px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; user-select: none; }
+.flash-front { font-size: clamp(42px,8vw,76px); font-weight: 900; color: var(--red); line-height: 1.25; }
+.flash-back { margin-top: 14px; }
+.flash-back .py { font-size: 21px; color: var(--blue); font-weight: 750; }
+.flash-answer-hanzi { font-size: 34px; color: var(--red); font-weight: 900; }
+.flash-back .meaning { font-size: 17px; margin-top: 4px; }
+.flash-mode-label { color: var(--gold); font-size: 11px; font-weight: 800; margin-top: 12px; }
+.virtual-keyboard { display: flex; flex-wrap: wrap; gap: 7px; padding: 12px; background: #111116; border: 1px solid var(--line); border-radius: 13px; margin: 12px 0; }
+.key-btn { border: 1px solid var(--line); background: var(--panel-2); color: var(--gold); padding: 8px 12px; border-radius: 9px; font-weight: 800; }
+.result { padding: 13px; border: 1px solid var(--line); border-radius: 12px; margin-top: 12px; background: #111116; }
+.result[hidden] { display: none; }
+.result-title { font-weight: 850; margin-bottom: 5px; }
+.result.ok { border-color: rgba(69,212,131,.55); }
+.result.info { border-color: rgba(255,214,107,.55); }
+.result.error { border-color: rgba(255,81,71,.55); }
+.practice-menu-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; width: 100%; padding: 15px; margin-bottom: 9px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; color: var(--text); }
+.practice-menu-card:hover { border-color: var(--red); background: var(--red-soft); }
+.practice-menu-card strong { display: block; font-size: 14px; }
+.practice-menu-card span { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+.question-prompt { font-size: 19px; font-weight: 800; margin: 17px 0; line-height: 1.55; }
+.options { display: grid; gap: 8px; }
+.option-btn { text-align: left; padding: 12px 14px; width: 100%; font-weight: 650; }
+.option-btn:hover:not(:disabled) { border-color: var(--blue); }
+.option-btn.correct, .action-btn.correct, .image-option.correct { border-color: var(--green); color: var(--green); background: rgba(69,212,131,.12); }
+.option-btn.incorrect, .action-btn.incorrect, .image-option.incorrect { border-color: var(--red); color: #ff827b; background: var(--red-soft); }
+.feedback { padding: 12px; border-radius: 11px; margin-top: 12px; font-size: 13px; }
+.feedback.good { color: var(--green); background: rgba(69,212,131,.1); }
+.feedback.bad { color: #ff827b; background: var(--red-soft); }
+.word-bank { display: flex; flex-wrap: wrap; gap: 7px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: #111116; }
+.word-chip { border: 1px solid rgba(255,81,71,.45); border-radius: 8px; padding: 5px 9px; color: #ff827b; background: var(--red-soft); font-size: 13px; font-weight: 800; }
+.audio-play { width: 100%; border: 1px solid rgba(114,213,255,.4); color: var(--blue); background: rgba(114,213,255,.08); padding: 15px; border-radius: 13px; font-weight: 800; margin: 10px 0; }
+.image-options { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; margin-top: 14px; }
+.image-option { min-height: 120px; display: flex; flex-direction: column; gap: 5px; justify-content: center; align-items: center; text-align: center; padding: 10px; border: 1px solid var(--line); border-radius: 13px; background: var(--panel-2); color: var(--text); }
+.image-option .emoji { font-size: 35px; }
+.image-option span:last-child { font-size: 11px; color: var(--muted); }
+.grammar-example { padding: 12px; margin-top: 9px; background: #111116; border-left: 3px solid var(--red); border-radius: 8px; cursor: pointer; }
+.grammar-example strong { display: block; font-size: 17px; }
+.grammar-example .py { color: var(--blue); font-size: 12px; }
+.grammar-example .es { color: var(--muted); font-size: 12px; }
+.modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.78); padding: 18px; align-items: center; justify-content: center; }
+.modal.open { display: flex; }
+.modal-panel { width: min(540px,100%); max-height: 85vh; overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 22px; position: relative; }
+.modal-close { position: absolute; right: 14px; top: 10px; border: 0; background: transparent; color: var(--muted); font-size: 24px; }
+.notice { color: var(--muted); font-size: 11px; padding: 11px 13px; border-radius: 10px; background: var(--yellow-soft); border: 1px solid rgba(255,214,107,.25); margin-top: 12px; }
+.hidden { display: none !important; }
+@media (max-width: 850px) {
+  .app-shell { display: block; }
+  .sidebar { position: sticky; top: 0; z-index: 50; height: auto; min-height: 0; padding: 10px 12px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .brand { padding: 0 0 7px; }
+  .brand-title { font-size: 18px; }
+  .brand-subtitle { font-size: 9px; margin-top: 0; }
+  .theme-switch { max-width: 300px; margin: 0 auto 7px; width: 100%; }
+  .nav-list { display: flex; gap: 7px; overflow-x: auto; padding: 0 0 3px; scrollbar-width: thin; }
+  .nav-btn { width: auto; min-width: max-content; padding: 9px 11px; font-size: 12px; }
+  .nav-btn .nav-icon { width: auto; }
+  .sidebar-note { display: none; }
+  .main { padding-top: 19px; }
+}
+@media (max-width: 560px) {
+  .main { padding: 16px 12px 40px; }
+  .topbar { align-items: flex-start; }
+  .topbar-chip { font-size: 10px; padding: 6px 9px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr 1fr; }
+  .card, .story-card { padding: 15px; }
+  .dict-head { grid-template-columns: 1fr; }
+  .word-meaning { text-align: left; max-width: none; }
+  .image-options { grid-template-columns: 1fr; }
+  .image-option { min-height: 80px; flex-direction: row; justify-content: flex-start; text-align: left; }
+  .image-option .emoji { width: 42px; }
+  .section-heading { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+</style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+<body>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Navegación principal">
+    <div class="brand">
+      <div class="brand-title">¡APRUEBA CHINO! 🎯</div>
+      <div class="brand-subtitle">INTEGRATED CHINESE · TEMAS 5 Y 6</div>
+    </div>
+    <div class="theme-switch" role="group" aria-label="Seleccionar tema">
+      <button class="theme-btn active" id="btn-theme-5" type="button" onclick="selectTheme(5)">Tema 5</button>
+      <button class="theme-btn" id="btn-theme-6" type="button" onclick="selectTheme(6)">Tema 6</button>
+    </div>
+    <nav class="nav-list" id="nav-list">
+      <button class="nav-btn active" data-section="home" type="button" onclick="navigate('home',this)"><span class="nav-icon">🏠</span> Inicio y progreso</button>
+      <button class="nav-btn" data-section="dict" type="button" onclick="navigate('dict',this)"><span class="nav-icon">📖</span> Diccionario</button>
+      <button class="nav-btn" data-section="flash" type="button" onclick="navigate('flash',this)"><span class="nav-icon">🎴</span> Flashcards</button>
+      <button class="nav-btn" data-section="checker" id="nav-checker" type="button" onclick="navigate('checker',this)"><span class="nav-icon">✍️</span> Entrenador de gramática</button>
+      <button class="nav-btn" data-section="exam-hub" id="nav-exam" type="button" onclick="navigate('exam-hub',this)"><span class="nav-icon">🎯</span> Modelos de examen</button>
+      <button class="nav-btn" data-section="dictado" id="nav-dictado" type="button" onclick="navigate('dictado',this)"><span class="nav-icon">👂</span> Dictado</button>
+      <button class="nav-btn" data-section="stories" type="button" onclick="navigate('stories',this)"><span class="nav-icon">📚</span> Diálogos e historias</button>
+      <button class="nav-btn" data-section="gram" type="button" onclick="navigate('gram',this)"><span class="nav-icon">📝</span> Apuntes de gramática</button>
+    </nav>
+    <div class="sidebar-note">Tu progreso se guarda en este dispositivo. Para no perderlo, evita borrar los datos del navegador.</div>
+  </aside>
 
-    <!-- Header / Navbar -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('text')">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-200">
-                    QL
-                </div>
-                <div>
-                    <span class="text-xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">QuickLab</span>
-                    <span class="block text-[10px] text-slate-400 font-medium tracking-wider -mt-1">100% LOCAL Y PRIVADO</span>
-                </div>
-            </div>
-            
-            <div class="hidden sm:flex items-center space-x-2 text-xs font-medium text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
-                <i class="fa-solid fa-shield-halved text-emerald-500"></i>
-                <span>Procesamiento 100% en tu navegador (Sin servidores)</span>
-            </div>
-        </div>
+  <main class="main">
+    <header class="topbar">
+      <div><h1 id="page-title">Inicio y progreso</h1><p id="page-subtitle">Organiza tu estudio y comprueba qué necesitas repasar.</p></div>
+      <div class="topbar-chip" id="active-theme-label">TEMA 5 ACTIVO</div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <!-- Top Ad Placeholder -->
-        <div class="mb-8 w-full bg-slate-100 border border-dashed border-slate-300 rounded-xl p-4 text-center text-slate-400 text-xs font-mono uppercase tracking-wider flex items-center justify-center min-h-[90px]">
-            <span><i class="fa-solid fa-rectangle-ad mr-2"></i> Espacio Publicitario (Google AdSense)</span>
+    <section class="section active" id="sec-home">
+      <div class="card welcome">
+        <div class="kicker">Tu espacio de estudio</div>
+        <h2>¡Cada repaso cuenta! 🏮</h2>
+        <p>Practica el vocabulario, escucha los diálogos, repasa las estructuras y pon a prueba lo que sabes. Elige el tema que estás preparando y trabaja un poco cada día.</p>
+      </div>
+      <div class="grid-3" style="margin-bottom:14px">
+        <div class="stat"><strong id="stat-total">0</strong><span>Palabras del tema</span></div>
+        <div class="stat"><strong id="stat-learned">0</strong><span>Marcadas como aprendidas</span></div>
+        <div class="stat"><strong id="stat-sessions">0</strong><span>Respuestas correctas</span></div>
+      </div>
+      <div class="card">
+        <div class="section-heading"><div><h2>Progreso del tema <span id="progress-theme-number">5</span></h2><p>Marca como aprendidas las palabras que ya recuerdas sin ayuda.</p></div><strong id="progress-percent" style="font-size:24px;color:var(--green)">0%</strong></div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="action-row"><button class="action-btn primary" type="button" onclick="navigateById('dict')">Repasar vocabulario</button><button class="action-btn ghost" type="button" onclick="navigateById('flash')">Practicar flashcards</button></div>
+      </div>
+      <div class="grid-2">
+        <button class="practice-menu-card" type="button" onclick="navigateById('stories')"><div><strong>📚 Escuchar diálogos</strong><span>Lee, escucha y oculta la traducción.</span></div><b>›</b></button>
+        <button class="practice-menu-card" type="button" onclick="navigateById('gram')"><div><strong>📝 Repasar gramática</strong><span>Reglas, ejemplos y usos frecuentes.</span></div><b>›</b></button>
+      </div>
+      <div class="notice">Nota: los contenidos y traducciones se han conservado a partir del material que proporcionaste. Comprueba que coinciden con la edición y las indicaciones concretas de tu profesor.</div>
+    </section>
+
+    <section class="section" id="sec-dict">
+      <div class="section-heading"><div><h2>📖 Diccionario</h2><p>Busca por caracteres, pinyin o significado. Abre los ejemplos para escucharlos.</p></div></div>
+      <div class="switch-row"><button class="mode-btn active" id="dict-tab-current" type="button" onclick="switchDictTab('current')">Tema actual</button><button class="mode-btn" id="dict-tab-global" type="button" onclick="switchDictTab('global')">Todos los temas</button></div>
+      <input class="search" id="global-search" type="search" placeholder="Buscar hanzi, pinyin o español…" autocomplete="off" oninput="renderDictionary()" aria-label="Buscar vocabulario">
+      <div id="dict-list-container"></div>
+    </section>
+
+    <section class="section" id="sec-flash">
+      <div class="section-heading"><div><h2>🎴 Flashcards</h2><p>Intenta recordar la respuesta antes de voltear la tarjeta.</p></div></div>
+      <div class="mode-row" aria-label="Modo de flashcards">
+        <button class="mode-btn active" data-flash-mode="hanzi" type="button" onclick="setFlashMode('hanzi',this)">Chino → significado</button>
+        <button class="mode-btn" data-flash-mode="meaning" type="button" onclick="setFlashMode('meaning',this)">Español → chino</button>
+        <button class="mode-btn" data-flash-mode="pinyin" type="button" onclick="setFlashMode('pinyin',this)">Pinyin → caracteres</button>
+      </div>
+      <div class="card flash-card" id="flash-card" role="button" tabindex="0" aria-label="Voltear flashcard" onclick="flipFlash()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();flipFlash()}">
+        <div class="kicker" id="flash-counter">Tarjeta 1</div>
+        <div class="flash-front" id="f-front">字</div>
+        <div class="flash-back hidden" id="f-back"><div class="flash-answer-hanzi" id="f-hanzi-answer">字</div><div class="py" id="f-py">zì</div><div class="meaning" id="f-es">carácter</div></div>
+        <div class="flash-mode-label" id="flash-hint">Piensa en el significado y pulsa para revelar.</div>
+      </div>
+      <div class="action-row">
+        <button class="action-btn ghost" type="button" onclick="previousFlash()">← Anterior</button>
+        <button class="action-btn primary" type="button" onclick="flipFlash()">👁️ Voltear</button>
+        <button class="action-btn ghost" type="button" onclick="nextFlash()">Siguiente →</button>
+      </div>
+      <div class="action-row">
+        <button class="action-btn bad" style="flex:1" type="button" onclick="rateFlash(false)">Necesito repasarla</button>
+        <button class="action-btn good" style="flex:1" type="button" onclick="rateFlash(true)">Ya me la sé ✓</button>
+      </div>
+      <p class="muted small" id="flash-progress-note" style="margin-top:10px"></p>
+    </section>
+
+    <section class="section" id="sec-checker">
+      <div class="card">
+        <div class="section-heading"><div><h2>✍️ Entrenador de gramática · Tema 6</h2><p>Escribe una frase y recibe una orientación sobre las estructuras del tema.</p></div><button class="small-btn" type="button" onclick="toggleKeyboardModal(true)">⌨️ Teclado chino</button></div>
+        <div class="notice">Este comprobador reconoce algunos patrones de práctica; no es un corrector lingüístico completo y no puede certificar que cualquier frase sea correcta.</div>
+        <label for="user-written-sentence" class="small muted">Tu frase en chino</label>
+        <input class="text-input" id="user-written-sentence" placeholder="Ej.: 我给他打电话 / 我到办公室去 / 要是你方便，我和你一起去" autocomplete="off">
+        <div class="kicker">Teclado rápido</div>
+        <div class="virtual-keyboard">
+          <button class="key-btn" type="button" onclick="insertText('给')">给</button><button class="key-btn" type="button" onclick="insertText('要')">要</button><button class="key-btn" type="button" onclick="insertText('别')">别</button><button class="key-btn" type="button" onclick="insertText('到')">到</button><button class="key-btn" type="button" onclick="insertText('去')">去</button><button class="key-btn" type="button" onclick="insertText('在')">在</button><button class="key-btn" type="button" onclick="insertText('打电话')">打电话</button><button class="key-btn" type="button" onclick="insertText('办公室')">办公室</button><button class="key-btn" type="button" onclick="insertText('我')">我</button><button class="key-btn" type="button" onclick="insertText('你')">你</button><button class="key-btn" type="button" onclick="insertText('老师')">老师</button><button class="key-btn" type="button" onclick="insertText('要是')">要是</button><button class="key-btn" type="button" onclick="insertText('方便')">方便</button><button class="key-btn" type="button" onclick="insertText('以后')">以后</button><button class="key-btn" type="button" onclick="insertText('帮')">帮</button><button class="key-btn" type="button" onclick="insertText('几')">几</button><button class="key-btn" type="button" onclick="insertText('哪')">哪</button><button class="key-btn" type="button" onclick="insertText('位')">位</button><button class="key-btn" type="button" onclick="insertText('考试')">考试</button><button class="key-btn" type="button" onclick="insertText('没有时间')">没有时间</button><button class="key-btn" type="button" onclick="insertText('BACKSPACE')">⌫ Borrar</button>
         </div>
-
-        <!-- Navigation Categories -->
-        <div class="flex flex-wrap gap-2 mb-8 border-b border-slate-200 pb-4">
-            <button onclick="switchTab('text')" id="tab-text" class="tab-btn active px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center space-x-2 bg-indigo-600 text-white shadow-md shadow-indigo-100">
-                <i class="fa-solid fa-pen-to-square"></i>
-                <span>Texto y Corrector</span>
-            </button>
-            <button onclick="switchTab('pdf')" id="tab-pdf" class="tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center space-x-2 bg-white text-slate-600 hover:bg-slate-100 border border-slate-200">
-                <i class="fa-solid fa-file-pdf text-red-500"></i>
-                <span>Herramientas PDF y Apuntes</span>
-            </button>
-            <button onclick="switchTab('image')" id="tab-image" class="tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center space-x-2 bg-white text-slate-600 hover:bg-slate-100 border border-slate-200">
-                <i class="fa-solid fa-image text-emerald-500"></i>
-                <span>Imágenes</span>
-            </button>
-            <button onclick="switchTab('marketing')" id="tab-marketing" class="tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center space-x-2 bg-white text-slate-600 hover:bg-slate-100 border border-slate-200">
-                <i class="fa-solid fa-qrcode text-purple-500"></i>
-                <span>Marketing y QR</span>
-            </button>
-        </div>
-
-        <!-- TAB 1: TEXTO & CORRECTOR -->
-        <section id="content-text" class="tab-content space-y-6">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-800">Corrector, Formateador y Contador de Texto</h2>
-                        <p class="text-xs text-slate-500">Analiza y corrige ortografía, tildes y formato en tiempo real.</p>
-                    </div>
-                    <div class="flex flex-wrap gap-2">
-                        <button onclick="correctText()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Corregir Todo
-                        </button>
-                        <button onclick="transformText('uppercase')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">MAYÚSCULAS</button>
-                        <button onclick="transformText('lowercase')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">minúsculas</button>
-                        <button onclick="transformText('title')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">Modo Título</button>
-                        <button onclick="copyToClipboard('text-input')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1">
-                            <i class="fa-regular fa-copy"></i> Copiar
-                        </button>
-                    </div>
-                </div>
-
-                <textarea id="text-input" oninput="analyzeText()" placeholder="Escribe o pega tu texto aquí para contar palabras, revisar ortografía y ajustar el formato..." class="w-full h-48 p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none text-slate-700 text-sm resize-y transition"></textarea>
-
-                <div id="correction-feedback" class="mt-3 hidden p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center justify-between">
-                    <span id="correction-msg"></span>
-                    <button onclick="this.parentElement.classList.add('hidden')" class="text-emerald-600 hover:text-emerald-900 font-bold">&times;</button>
-                </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-slate-100">
-                    <div class="bg-slate-50 p-3 rounded-xl text-center">
-                        <span id="stat-words" class="block text-2xl font-extrabold text-indigo-600">0</span>
-                        <span class="text-xs text-slate-500 font-medium">Palabras</span>
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded-xl text-center">
-                        <span id="stat-chars" class="block text-2xl font-extrabold text-indigo-600">0</span>
-                        <span class="text-xs text-slate-500 font-medium">Caracteres</span>
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded-xl text-center">
-                        <span id="stat-paragraphs" class="block text-2xl font-extrabold text-indigo-600">0</span>
-                        <span class="text-xs text-slate-500 font-medium">Párrafos</span>
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded-xl text-center">
-                        <span id="stat-reading" class="block text-2xl font-extrabold text-indigo-600">0m</span>
-                        <span class="text-xs text-slate-500 font-medium">Tiempo de Lectura</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 2: PDF TOOLS & APUNTES -->
-        <section id="content-pdf" class="tab-content hidden space-y-6">
-            
-            <!-- Generador de Apuntes (Destacado) -->
-            <div class="bg-gradient-to-r from-indigo-900 to-slate-900 text-white p-6 rounded-2xl shadow-md">
-                <div class="flex items-center space-x-3 mb-2">
-                    <span class="bg-indigo-500 text-white text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md">Para Estudiantes</span>
-                    <span class="text-indigo-300 text-xs font-semibold">Convertidor de Presentaciones</span>
-                </div>
-                <h3 class="text-xl font-bold mb-1">Convertir Diapositivas / PDFs a Apuntes de Estudio</h3>
-                <p class="text-xs text-slate-300 mb-4 max-w-2xl">Sube las diapositivas o PDF de tu profesor para extraer el texto y transformarlo en una estructura limpia de apuntes organizada por resúmenes y puntos clave.</p>
-                
-                <input type="file" id="notes-pdf-input" accept="application/pdf" class="hidden" onchange="generateStudyNotes(this)">
-                <button onclick="document.getElementById('notes-pdf-input').click()" class="py-2.5 px-5 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold text-xs rounded-xl transition shadow-lg flex items-center space-x-2">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                    <span>Subir Presentación PDF para Generar Apuntes</span>
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center text-xl mb-4">
-                            <i class="fa-solid fa-file-word"></i>
-                        </div>
-                        <h3 class="font-bold text-slate-800 text-base mb-1">PDF a Texto</h3>
-                        <p class="text-xs text-slate-500 mb-4">Extrae todo el contenido de texto legible de tu archivo PDF.</p>
-                        <input type="file" id="pdf-to-text-input" accept="application/pdf" class="hidden" onchange="convertPdfToText(this)">
-                        <button onclick="document.getElementById('pdf-to-text-input').click()" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition border border-slate-200">
-                            Seleccionar PDF
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-xl mb-4">
-                            <i class="fa-solid fa-file-pdf"></i>
-                        </div>
-                        <h3 class="font-bold text-slate-800 text-base mb-1">Imágenes a PDF</h3>
-                        <p class="text-xs text-slate-500 mb-4">Convierte una o varias imágenes (JPG, PNG) en un único PDF.</p>
-                        <input type="file" id="img-to-pdf-input" accept="image/*" multiple class="hidden" onchange="convertImagesToPdf(this)">
-                        <button onclick="document.getElementById('img-to-pdf-input').click()" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition border border-slate-200">
-                            Seleccionar Imágenes
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl mb-4">
-                            <i class="fa-solid fa-object-group"></i>
-                        </div>
-                        <h3 class="font-bold text-slate-800 text-base mb-1">Unir PDFs</h3>
-                        <p class="text-xs text-slate-500 mb-4">Combina múltiples archivos PDF en un solo documento final.</p>
-                        <input type="file" id="merge-pdf-input" accept="application/pdf" multiple class="hidden" onchange="mergePdfs(this)">
-                        <button onclick="document.getElementById('merge-pdf-input').click()" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition border border-slate-200">
-                            Seleccionar PDFs
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="pdf-output-card" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="flex items-center justify-between mb-3">
-                    <h4 class="font-bold text-slate-800 text-sm" id="pdf-output-title">Resultado PDF</h4>
-                    <button onclick="copyToClipboard('pdf-text-result')" id="copy-pdf-btn" class="hidden text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1 rounded-md text-slate-700">Copiar Texto</button>
-                </div>
-                <textarea id="pdf-text-result" readonly class="w-full h-56 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-700 focus:outline-none resize-y"></textarea>
-            </div>
-        </section>
-
-        <!-- TAB 3: IMÁGENES -->
-        <section id="content-image" class="tab-content hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <h3 class="font-bold text-slate-800 text-base mb-1">Compresor y Conversor de Imágenes</h3>
-                <p class="text-xs text-slate-500 mb-6">Reduce el peso de tus imágenes JPG, PNG o WebP sin enviarlas a ningún servidor.</p>
-
-                <div class="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center bg-slate-50 hover:border-indigo-400 transition cursor-pointer" onclick="document.getElementById('image-file-input').click()">
-                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-indigo-500 mb-2"></i>
-                    <p class="text-sm font-semibold text-slate-700">Haz clic para subir una imagen</p>
-                    <p class="text-xs text-slate-400 mt-1">Soporta JPG, PNG y WebP</p>
-                    <input type="file" id="image-file-input" accept="image/*" class="hidden" onchange="handleImageUpload(this)">
-                </div>
-
-                <div id="image-editor" class="hidden mt-6 space-y-6 border-t border-slate-100 pt-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                        <div>
-                            <p class="text-xs font-semibold text-slate-500 mb-2">Vista previa original</p>
-                            <img id="preview-img" class="max-h-48 rounded-xl border border-slate-200 object-contain bg-slate-100 mx-auto" />
-                        </div>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Nivel de Calidad: <span id="quality-val" class="font-bold text-indigo-600">80%</span></label>
-                                <input type="range" id="quality-range" min="10" max="100" value="80" oninput="updateQualityVal(this.value)" class="w-full accent-indigo-600">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Formato de Salida</label>
-                                <select id="format-select" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700">
-                                    <option value="image/jpeg">JPEG / JPG</option>
-                                    <option value="image/png">PNG</option>
-                                    <option value="image/webp">WebP</option>
-                                </select>
-                            </div>
-                            <button onclick="processImage()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-100 transition">
-                                Procesar y Descargar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 4: MARKETING & QR -->
-        <section id="content-marketing" class="tab-content hidden space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-base mb-1">Generador de Código QR</h3>
-                        <p class="text-xs text-slate-500 mb-4">Crea códigos QR instantáneos para tu web, red WiFi o texto.</p>
-                        
-                        <div class="space-y-3 mb-4">
-                            <input type="text" id="qr-input" placeholder="https://tuweb.com o texto..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500">
-                            <button onclick="generateQR()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-md shadow-indigo-100">
-                                Generar Código QR
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="qr-result-container" class="hidden flex flex-col items-center justify-center p-4 bg-slate-50 rounded-xl border border-slate-200 mt-2">
-                        <div id="qrcode" class="mb-3"></div>
-                        <button onclick="downloadQR()" class="text-xs text-indigo-600 font-semibold hover:underline">Descargar QR en Imagen</button>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-base mb-1">Generador de Enlace WhatsApp</h3>
-                        <p class="text-xs text-slate-500 mb-4">Crea un link directo a tu chat con mensaje predefinido.</p>
-                        
-                        <div class="space-y-3 mb-4">
-                            <input type="text" id="wa-phone" placeholder="Número con prefijo (Ej: 34600000000)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500">
-                            <textarea id="wa-msg" placeholder="Mensaje inicial (opcional)..." class="w-full h-20 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
-                            <button onclick="generateWALink()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl transition shadow-md shadow-emerald-100">
-                                Generar Enlace Directo
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="wa-result-container" class="hidden p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-                        <p class="font-semibold text-slate-700 mb-1">Tu enlace de WhatsApp:</p>
-                        <input type="text" id="wa-output-link" readonly class="w-full p-2 bg-white border border-slate-200 rounded-md font-mono text-[11px] mb-2 text-slate-600">
-                        <button onclick="copyToClipboard('wa-output-link')" class="w-full py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded-md transition">Copiar Enlace</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Bottom Ad Placeholder -->
-        <div class="mt-12 w-full bg-slate-100 border border-dashed border-slate-300 rounded-xl p-4 text-center text-slate-400 text-xs font-mono uppercase tracking-wider flex items-center justify-center min-h-[90px]">
-            <span><i class="fa-solid fa-rectangle-ad mr-2"></i> Espacio Publicitario (Google AdSense)</span>
-        </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 mt-12 py-6">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400 space-y-2">
-            <p>&copy; 2026 <strong class="text-slate-600">QuickLab</strong> - Herramientas Web Gratuitas y Privadas.</p>
-            <p>Procesamiento 100% en tu dispositivo. Ningún archivo o texto es enviado a servidores externos.</p>
-        </div>
-    </footer>
-
-    <!-- JavaScript Application Logic -->
-    <script>
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-100');
-                btn.classList.add('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
-            });
-
-            document.getElementById(`content-${tabId}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            activeBtn.classList.remove('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
-            activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-100');
-        }
-
-        function analyzeText() {
-            const text = document.getElementById('text-input').value;
-            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-            const chars = text.length;
-            const paragraphs = text.trim() ? text.split(/\n+/).length : 0;
-            const readingTime = Math.ceil(words / 200);
-
-            document.getElementById('stat-words').innerText = words;
-            document.getElementById('stat-chars').innerText = chars;
-            document.getElementById('stat-paragraphs').innerText = paragraphs;
-            document.getElementById('stat-reading').innerText = `${readingTime}m`;
-        }
-
-        function transformText(type) {
-            const input = document.getElementById('text-input');
-            if (type === 'uppercase') input.value = input.value.toUpperCase();
-            if (type === 'lowercase') input.value = input.value.toLowerCase();
-            if (type === 'title') {
-                input.value = input.value.toLowerCase().replace(/(?:^|\s)\S/g, a => a.toUpperCase());
-            }
-            analyzeText();
-        }
-
-        function correctText() {
-            let text = document.getElementById('text-input').value;
-            if (!text.trim()) return;
-
-            let replacements = 0;
-            const rules = [
-                { reg: /\b(que|que|q)\b/gi, rep: 'que' },
-                { reg: /\b(tambien)\b/gi, rep: 'también' },
-                { reg: /\b(ademas)\b/gi, rep: 'además' },
-                { reg: /\b(rapido)\b/gi, rep: 'rápido' },
-                { reg: /\b(facil)\b/gi, rep: 'fácil' },
-                { reg: /\b(pagina)\b/gi, rep: 'página' },
-                { reg: /\b(telefono)\b/gi, rep: 'teléfono' },
-                { reg: /\b(ingles)\b/gi, rep: 'inglés' },
-                { reg: /\b(mas)\b/gi, rep: 'más' },
-                { reg: /  +/g, rep: ' ' },
-                { reg: /([.?!])\s*([a-zñ])/g, rep: (m, p1, p2) => `${p1} ${p2.toUpperCase()}` }
-            ];
-
-            rules.forEach(rule => {
-                const matches = text.match(rule.reg);
-                if (matches) replacements += matches.length;
-                text = text.replace(rule.reg, rule.rep);
-            });
-
-            if (text.length > 0) {
-                text = text.charAt(0).toUpperCase() + text.slice(1);
-            }
-
-            document.getElementById('text-input').value = text;
-            analyzeText();
-
-            const feedback = document.getElementById('correction-feedback');
-            document.getElementById('correction-msg').innerText = `¡Revisión completada! Se realizaron correcciones y ajustes de formato.`;
-            feedback.classList.remove('hidden');
-        }
-
-        async function generateStudyNotes(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const outputCard = document.getElementById('pdf-output-card');
-            const resultArea = document.getElementById('pdf-text-result');
-            document.getElementById('pdf-output-title').innerText = "Apuntes Generados de Estudio";
-            document.getElementById('copy-pdf-btn').classList.remove('hidden');
-            outputCard.classList.remove('hidden');
-            resultArea.value = "Procesando presentación/PDF y generando estructura de apuntes...";
-
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                let rawText = '';
-
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const tokenized = await page.getTextContent();
-                    const pageText = tokenized.items.map(token => token.str).join(' ');
-                    rawText += `[Diapositiva/Pág ${i}]: ${pageText}\n`;
-                }
-
-                // Generar estructura de apuntes
-                const lines = rawText.split('\n').filter(l => l.trim().length > 15);
-                let notesStructure = `==================================================\n`;
-                notesStructure += `📚 APUNTES Y RESUMEN DE CLASE: ${file.name}\n`;
-                notesStructure += `==================================================\n\n`;
-                
-                notesStructure += `1. RESUMEN GENERAL Y CONCEPTOS CLAVE\n`;
-                notesStructure += `--------------------------------------------------\n`;
-                lines.slice(0, 8).forEach(l => {
-                    notesStructure += `• ${l.replace(/\[Diapositiva\/Pág \d+\]:/, '').trim()}\n`;
-                });
-
-                notesStructure += `\n2. PUNTOS CLAVE PARA EXAMEN\n`;
-                notesStructure += `--------------------------------------------------\n`;
-                lines.slice(8, 16).forEach(l => {
-                    notesStructure += `✔ ${l.replace(/\[Diapositiva\/Pág \d+\]:/, '').trim()}\n`;
-                });
-
-                notesStructure += `\n3. TRANSCRIPCIÓN ORGANIZADA POR DIAPOSITIVAS\n`;
-                notesStructure += `--------------------------------------------------\n`;
-                notesStructure += rawText;
-
-                resultArea.value = notesStructure;
-            } catch (err) {
-                resultArea.value = "Error al procesar la presentación: " + err.message;
-            }
-        }
-
-        async function convertPdfToText(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const outputCard = document.getElementById('pdf-output-card');
-            const resultArea = document.getElementById('pdf-text-result');
-            document.getElementById('pdf-output-title').innerText = "Resultado PDF a Texto";
-            document.getElementById('copy-pdf-btn').classList.remove('hidden');
-            outputCard.classList.remove('hidden');
-            resultArea.value = "Extrayendo texto del PDF, por favor espera...";
-
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                let fullText = '';
-
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const tokenized = await page.getTextContent();
-                    const pageText = tokenized.items.map(token => token.str).join(' ');
-                    fullText += `--- Página ${i} ---\n${pageText}\n\n`;
-                }
-
-                resultArea.value = fullText || "No se encontró texto legible en el documento PDF.";
-            } catch (err) {
-                resultArea.value = "Error al procesar el archivo PDF: " + err.message;
-            }
-        }
-
-        async function convertImagesToPdf(input) {
-            const files = input.files;
-            if (!files.length) return;
-
-            try {
-                const pdfDoc = await PDFLib.PDFDocument.create();
-
-                for (let file of files) {
-                    const arrayBuffer = await file.arrayBuffer();
-                    let image;
-                    if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
-                        image = await pdfDoc.embedJpg(arrayBuffer);
-                    } else if (file.type === 'image/png') {
-                        image = await pdfDoc.embedPng(arrayBuffer);
-                    } else {
-                        continue;
-                    }
-
-                    const page = pdfDoc.addPage([image.width, image.height]);
-                    page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
-                }
-
-                const pdfBytes = await pdfDoc.save();
-                downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'imagenes-convertidas.pdf');
-            } catch (err) {
-                alert("Error creando PDF: " + err.message);
-            }
-        }
-
-        async function mergePdfs(input) {
-            const files = input.files;
-            if (files.length < 2) {
-                alert("Por favor selecciona al menos 2 archivos PDF para unir.");
-                return;
-            }
-
-            try {
-                const mergedPdf = await PDFLib.PDFDocument.create();
-
-                for (let file of files) {
-                    const arrayBuffer = await file.arrayBuffer();
-                    const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
-                    const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                    copiedPages.forEach(page => mergedPdf.addPage(page));
-                }
-
-                const pdfBytes = await mergedPdf.save();
-                downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'pdf-unido.pdf');
-            } catch (err) {
-                alert("Error uniendo archivos PDF: " + err.message);
-            }
-        }
-
-        let currentLoadedImage = null;
-
-        function handleImageUpload(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    currentLoadedImage = img;
-                    document.getElementById('preview-img').src = e.target.result;
-                    document.getElementById('image-editor').classList.remove('hidden');
-                }
-                img.src = e.target.result;
-            }
-            reader.readAsDataURL(file);
-        }
-
-        function updateQualityVal(val) {
-            document.getElementById('quality-val').innerText = `${val}%`;
-        }
-
-        function processImage() {
-            if (!currentLoadedImage) return;
-
-            const canvas = document.createElement('canvas');
-            canvas.width = currentLoadedImage.width;
-            canvas.height = currentLoadedImage.height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(currentLoadedImage, 0, 0);
-
-            const quality = parseFloat(document.getElementById('quality-range').value) / 100;
-            const format = document.getElementById('format-select').value;
-
-            canvas.toBlob((blob) => {
-                const ext = format.split('/')[1];
-                downloadBlob(blob, `imagen-optimizada.${ext}`);
-            }, format, quality);
-        }
-
-        let qrCodeObj = null;
-
-        function generateQR() {
-            const text = document.getElementById('qr-input').value;
-            if (!text.trim()) return;
-
-            const container = document.getElementById('qrcode');
-            container.innerHTML = '';
-
-            qrCodeObj = new QRCode(container, {
-                text: text,
-                width: 160,
-                height: 160,
-                colorDark : "#312e81",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
-
-            document.getElementById('qr-result-container').classList.remove('hidden');
-        }
-
-        function downloadQR() {
-            const img = document.querySelector('#qrcode img');
-            if (img) {
-                const a = document.createElement('a');
-                a.href = img.src;
-                a.download = 'codigo-qr.png';
-                a.click();
-            }
-        }
-
-        function generateWALink() {
-            const phone = document.getElementById('wa-phone').value.replace(/[^0-9]/g, '');
-            const msg = encodeURIComponent(document.getElementById('wa-msg').value);
-            
-            if (!phone) {
-                alert('Introduce un número de teléfono válido.');
-                return;
-            }
-
-            const link = `https://wa.me/${phone}${msg ? '?text=' + msg : ''}`;
-            document.getElementById('wa-output-link').value = link;
-            document.getElementById('wa-result-container').classList.remove('hidden');
-        }
-
-        function copyToClipboard(elementId) {
-            const el = document.getElementById(elementId);
-            el.select();
-            document.execCommand('copy');
-            alert('¡Copiado al portapapeles!');
-        }
-
-        function downloadBlob(blob, filename) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-    </script>
+        <button class="action-btn primary" type="button" onclick="checkUserSentence()">Analizar estructura</button>
+        <div class="result" id="checker-result" hidden aria-live="polite"><div class="result-title" id="checker-title"></div><div id="checker-explanation"></div><div class="small" id="checker-example" style="color:var(--blue);margin-top:7px"></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="sec-exam-hub">
+      <div class="section-heading"><div><h2>🎯 Modelos de examen · Tema 5</h2><p>Preguntas mezcladas en orden aleatorio. Responde antes de pasar a la siguiente.</p></div></div>
+      <button class="practice-menu-card" type="button" onclick="openPractice(2)"><div><strong>2. Frases con huecos</strong><span>Elige la palabra que completa la oración.</span></div><b>✍️</b></button>
+      <button class="practice-menu-card" type="button" onclick="openPractice(3)"><div><strong>3. Gramática · A, B o C</strong><span>Identifica la construcción correcta.</span></div><b>📐</b></button>
+      <button class="practice-menu-card" type="button" onclick="openPractice(4)"><div><strong>4. Comprensión lectora</strong><span>Lee una frase y responde a una pregunta.</span></div><b>📄</b></button>
+      <button class="practice-menu-card" type="button" onclick="openPractice(5)"><div><strong>5. Listening · O / X</strong><span>Escucha una frase y decide si coincide con la afirmación.</span></div><b>👂</b></button>
+      <button class="practice-menu-card" type="button" onclick="openPractice(6)"><div><strong>6. Listening · Relacionar con una imagen</strong><span>Escucha y selecciona la imagen correspondiente.</span></div><b>🖼️</b></button>
+      <button class="practice-menu-card" type="button" onclick="openPractice(7)"><div><strong>7. Listening · Pregunta y respuesta</strong><span>Escucha y elige la respuesta más adecuada.</span></div><b>🎧</b></button>
+    </section>
+
+    <section class="section" id="sec-dictado">
+      <div class="section-heading"><div><h2>👂 Dictado · Tema 5</h2><p>Escucha la palabra, escríbela en papel y revela la solución para comprobarla.</p></div></div>
+      <div class="card" style="text-align:center">
+        <div class="kicker" id="dictado-count">Palabra 1 de 10</div>
+        <div style="font-size:64px;margin:18px 0">🎧</div>
+        <button class="audio-play" type="button" onclick="playDictation()">🔊 Escuchar palabra</button>
+        <div id="dictado-res" class="hidden" style="margin-top:15px"><div class="word-hanzi" id="dictado-hz" style="font-size:48px"></div><div id="dictado-py" style="color:var(--blue);margin-top:5px"></div><div id="dictado-es" style="color:var(--green);font-weight:750;margin-top:4px"></div></div>
+      </div>
+      <button class="action-btn primary" id="btn-reveal" style="width:100%" type="button" onclick="revealDictation()">Revelar solución</button>
+      <button class="action-btn good hidden" id="btn-next-dictado" style="width:100%;margin-top:8px" type="button" onclick="nextDictation()">Siguiente palabra →</button>
+      <button class="action-btn ghost hidden" id="btn-restart-dictado" style="width:100%;margin-top:8px" type="button" onclick="startDictation()">Repetir tanda</button>
+    </section>
+
+    <section class="section" id="sec-stories">
+      <div class="section-heading"><div><h2>📚 Diálogos e historias</h2><p>Escucha cada línea y cambia lo que quieres ver en pantalla.</p></div></div>
+      <div class="mode-row">
+        <button class="mode-btn active" id="vm-all" type="button" onclick="setStoryMode('all',this)">Todo</button><button class="mode-btn" id="vm-hz" type="button" onclick="setStoryMode('hz',this)">Caracteres</button><button class="mode-btn" id="vm-py" type="button" onclick="setStoryMode('py',this)">Pinyin</button><button class="mode-btn" id="vm-es" type="button" onclick="setStoryMode('es',this)">Español</button>
+      </div>
+      <div id="story1-card" class="story-card"><div class="story-title" id="t-story1-title"></div><div class="action-row" style="margin:0 0 8px"><button class="small-btn" type="button" onclick="playStory(1)">▶ Escuchar texto completo</button></div><div id="story1-list"></div></div>
+      <div id="story2-card" class="story-card"><div class="story-title" id="t-story2-title"></div><div class="action-row" style="margin:0 0 8px"><button class="small-btn" type="button" onclick="playStory(2)">▶ Escuchar texto completo</button></div><div id="story2-list"></div></div>
+      <div id="story3-card" class="story-card hidden"><div class="story-title" id="t-story3-title"></div><div class="action-row" style="margin:0 0 8px"><button class="small-btn" type="button" onclick="playStory(3)">▶ Escuchar texto completo</button></div><div id="story3-list"></div></div>
+    </section>
+
+    <section class="section" id="sec-gram">
+      <div class="section-heading"><div><h2>📝 Apuntes de gramática</h2><p>Reglas resumidas con ejemplos de los temas seleccionados.</p></div></div>
+      <div id="gram-content-box"></div>
+    </section>
+
+    <section class="section" id="sec-practice-runner">
+      <div class="story-card">
+        <div class="section-heading"><div><h2 id="p-runner-title">Práctica de examen</h2><p id="practice-progress">Pregunta 1</p></div><button class="small-btn" type="button" onclick="navigateById('exam-hub')">Salir</button></div>
+        <div class="progress-track"><div class="progress-fill" id="practice-progress-fill"></div></div>
+        <div id="p-runner-body"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="keyboard-modal" role="dialog" aria-modal="true" aria-labelledby="keyboard-modal-title" onclick="if(event.target===this)toggleKeyboardModal(false)">
+  <div class="modal-panel">
+    <button class="modal-close" type="button" aria-label="Cerrar" onclick="toggleKeyboardModal(false)">×</button>
+    <h2 id="keyboard-modal-title" style="color:var(--red);margin:0 0 10px">⌨️ Cómo activar el teclado chino</h2>
+    <p class="muted small">Activa el teclado Pinyin del dispositivo para escribir caracteres chinos directamente.</p>
+    <h3 style="color:var(--gold);font-size:14px">Windows 10 / 11</h3>
+    <p class="small">Configuración → Hora e idioma → Idioma y región → Agregar un idioma → Chino (simplificado). Cambia de teclado con <b>Windows + Espacio</b>.</p>
+    <h3 style="color:var(--gold);font-size:14px">macOS</h3>
+    <p class="small">Ajustes del Sistema → Teclado → Fuentes de entrada → Añadir Chino simplificado - Pinyin. El atajo de cambio depende de la configuración del teclado.</p>
+    <h3 style="color:var(--gold);font-size:14px">iPhone / iPad</h3>
+    <p class="small">Ajustes → General → Teclado → Teclados → Añadir nuevo teclado → Chino simplificado (Pinyin).</p>
+    <button class="action-btn primary" type="button" style="width:100%;margin-top:12px" onclick="toggleKeyboardModal(false)">Entendido</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// CONTENIDO: vocabulario y diálogos introducidos en el código original (Tema 5 intacto + Tema 6 ampliado).
+const VOCAB_TEMA_5 = [
+{num:1,hz:"呀",py:"ya",cat:"Partícula",es:"Partícula exclamativa o suavizadora",exZh:"太好了呀！",exPy:"Tài hǎo le ya!",exEs:"¡Qué bien!"},
+{num:2,hz:"进",py:"jìn",cat:"Verbo",es:"Entrar",exZh:"进门",exPy:"jìn mén",exEs:"Entrar por la puerta."},
+{num:3,hz:"快",py:"kuài",cat:"Adverbio",es:"Rápido; deprisa",exZh:"快来！",exPy:"Kuài lái!",exEs:"¡Ven rápido!"},
+{num:4,hz:"进来",py:"jìn lai",cat:"Verbo direccional",es:"Entrar hacia aquí",exZh:"请进来。",exPy:"Qǐng jìn lai.",exEs:"Por favor, entra."},
+{num:5,hz:"来",py:"lái",cat:"Verbo",es:"Venir",exZh:"你来我家吗？",exPy:"Nǐ lái wǒ jiā ma?",exEs:"¿Vienes a mi casa?"},
+{num:6,hz:"介绍",py:"jièshào",cat:"Verbo",es:"Presentar",exZh:"我介绍一下。",exPy:"Wǒ jièshào yí xià.",exEs:"Os presento brevemente…"},
+{num:7,hz:"一下",py:"yí xià",cat:"Estructura",es:"Un momento; brevemente",exZh:"看一下这个人。",exPy:"Kàn yí xià zhè ge rén.",exEs:"Mira un momento a esta persona."},
+{num:8,hz:"高兴",py:"gāoxìng",cat:"Adjetivo",es:"Contento; alegre",exZh:"很高兴认识你。",exPy:"Hěn gāoxìng rènshi nǐ.",exEs:"Encantado/a de conocerte."},
+{num:9,hz:"漂亮",py:"piàoliang",cat:"Adjetivo",es:"Bonito; guapo",exZh:"我家很漂亮。",exPy:"Wǒ jiā hěn piàoliang.",exEs:"Mi casa es muy bonita."},
+{num:10,hz:"坐",py:"zuò",cat:"Verbo",es:"Sentarse",exZh:"请坐。",exPy:"Qǐng zuò.",exEs:"Siéntate, por favor."},
+{num:11,hz:"在",py:"zài",cat:"Verbo / preposición",es:"Estar en; en (lugar)",exZh:"我在大学学习。",exPy:"Wǒ zài dàxué xuéxí.",exEs:"Estudio en la universidad."},
+{num:12,hz:"哪儿",py:"nǎr",cat:"Pronombre interrogativo",es:"Dónde",exZh:"你在哪儿学习中文？",exPy:"Nǐ zài nǎr xué Zhōngwén?",exEs:"¿Dónde estudias chino?"},
+{num:13,hz:"学校",py:"xuéxiào",cat:"Sustantivo",es:"Escuela; centro de estudios",exZh:"我在学校学中文。",exPy:"Wǒ zài xuéxiào xué Zhōngwén.",exEs:"Estudio chino en la escuela."},
+{num:14,hz:"喝",py:"hē",cat:"Verbo",es:"Beber",exZh:"请问，你想喝什么？",exPy:"Qǐng wèn, nǐ xiǎng hē shénme?",exEs:"Disculpa, ¿qué quieres beber?"},
+{num:15,hz:"点(儿)",py:"diǎn(r)",cat:"Expresión de cantidad",es:"Un poco de",exZh:"喝点儿咖啡。",exPy:"Hē diǎnr kāfēi.",exEs:"Beber un poco de café."},
+{num:16,hz:"茶",py:"chá",cat:"Sustantivo",es:"Té",exZh:"你喜欢茶还是咖啡？",exPy:"Nǐ xǐhuān chá háishi kāfēi?",exEs:"¿Te gusta el té o el café?"},
+{num:17,hz:"咖啡",py:"kāfēi",cat:"Sustantivo",es:"Café",exZh:"你想喝咖啡吗？",exPy:"Nǐ xiǎng hē kāfēi ma?",exEs:"¿Quieres beber café?"},
+{num:18,hz:"吧",py:"ba",cat:"Partícula",es:"Sugerencia o propuesta amable",exZh:"我们喝咖啡吧。",exPy:"Wǒmen hē kāfēi ba.",exEs:"Vamos a tomar un café."},
+{num:19,hz:"要",py:"yào",cat:"Verbo modal",es:"Querer; necesitar",exZh:"我们要一杯咖啡。",exPy:"Wǒmen yào yì bēi kāfēi.",exEs:"Queremos una taza de café."},
+{num:20,hz:"瓶",py:"píng",cat:"Clasificador",es:"Clasificador para botellas",exZh:"一瓶可乐。",exPy:"Yì píng kělè.",exEs:"Una botella de refresco de cola."},
+{num:21,hz:"可乐",py:"kělè",cat:"Sustantivo",es:"Refresco de cola",exZh:"可乐在哪儿？",exPy:"Kělè zài nǎr?",exEs:"¿Dónde está el refresco?"},
+{num:22,hz:"可以",py:"kěyǐ",cat:"Verbo modal",es:"Poder; estar permitido",exZh:"我可以和你跳舞吗？",exPy:"Wǒ kěyǐ hé nǐ tiào wǔ ma?",exEs:"¿Puedo bailar contigo?"},
+{num:23,hz:"对不起",py:"duìbuqǐ",cat:"Expresión",es:"Lo siento; perdón",exZh:"对不起，我不知道。",exPy:"Duìbuqǐ, wǒ bù zhīdào.",exEs:"Lo siento, no lo sé."},
+{num:24,hz:"给",py:"gěi",cat:"Verbo / preposición",es:"Dar; a; para",exZh:"给我一瓶可乐。",exPy:"Gěi wǒ yì píng kělè.",exEs:"Dame una botella de refresco."},
+{num:25,hz:"杯",py:"bēi",cat:"Clasificador",es:"Clasificador para vasos y tazas",exZh:"两杯咖啡。",exPy:"Liǎng bēi kāfēi.",exEs:"Dos tazas de café."},
+{num:26,hz:"水",py:"shuǐ",cat:"Sustantivo",es:"Agua",exZh:"请给我一杯水。",exPy:"Qǐng gěi wǒ yì bēi shuǐ.",exEs:"Por favor, dame un vaso de agua."},
+{num:27,hz:"高小音",py:"Gāo Xiǎoyīn",cat:"Nombre propio",es:"Gao Xiaoyin",exZh:"高小音在学校。",exPy:"Gāo Xiǎoyīn zài xuéxiào.",exEs:"Gao Xiaoyin está en la escuela."},
+{num:28,hz:"玩(儿)",py:"wán(r)",cat:"Verbo",es:"Divertirse; pasar el rato",exZh:"我们去你家玩儿吧。",exPy:"Wǒmen qù nǐ jiā wánr ba.",exEs:"Vamos a tu casa a pasar el rato."},
+{num:29,hz:"了",py:"le",cat:"Partícula",es:"Partícula de aspecto o cambio",exZh:"我喝了两杯咖啡。",exPy:"Wǒ hē le liǎng bēi kāfēi.",exEs:"He bebido dos tazas de café."},
+{num:30,hz:"图书馆",py:"túshūguǎn",cat:"Sustantivo",es:"Biblioteca",exZh:"我没有去图书馆。",exPy:"Wǒ méiyǒu qù túshūguǎn.",exEs:"No he ido a la biblioteca."},
+{num:31,hz:"一起",py:"yìqǐ",cat:"Adverbio",es:"Juntos",exZh:"我们一起在图书馆看书。",exPy:"Wǒmen yìqǐ zài túshūguǎn kàn shū.",exEs:"Leemos juntos en la biblioteca."},
+{num:32,hz:"聊天(儿)",py:"liáo tiān(r)",cat:"Verbo",es:"Charlar; conversar",exZh:"我们在聊天儿。",exPy:"Wǒmen zài liáo tiānr.",exEs:"Estamos charlando."},
+{num:33,hz:"才",py:"cái",cat:"Adverbio",es:"No… hasta; solo entonces",exZh:"我今天才去图书馆。",exPy:"Wǒ jīntiān cái qù túshūguǎn.",exEs:"No voy a la biblioteca hasta hoy."},
+{num:34,hz:"回家",py:"huí jiā",cat:"Verbo",es:"Volver a casa",exZh:"我想回家。",exPy:"Wǒ xiǎng huí jiā.",exEs:"Quiero volver a casa."}
+];
+
+const VOCAB_TEMA_6 = [
+{num:1,hz:"给",py:"gěi",cat:"Verbo / preposición",es:"Dar; a; para",exZh:"我给他打电话。",exPy:"Wǒ gěi tā dǎ diànhuà.",exEs:"Le llamo por teléfono."},
+{num:2,hz:"打电话",py:"dǎ diànhuà",cat:"Verbo separable",es:"Llamar por teléfono",exZh:"常老师在给我打电话。",exPy:"Cháng lǎoshī zài gěi wǒ dǎ diànhuà.",exEs:"La profesora Chang me está llamando."},
+{num:3,hz:"电话",py:"diànhuà",cat:"Sustantivo",es:"Teléfono",exZh:"这是我的电话。",exPy:"Zhè shì wǒ de diànhuà.",exEs:"Este es mi teléfono."},
+{num:4,hz:"喂",py:"wéi / wèi",cat:"Expresión",es:"¿Diga?; hola (al teléfono)",exZh:"喂，请问常老师在吗？",exPy:"Wéi, qǐng wèn Cháng lǎoshī zài ma?",exEs:"¿Diga? Disculpe, ¿está la profesora Chang?"},
+{num:5,hz:"在",py:"zài",cat:"Verbo / preposición",es:"Estar en un lugar; estar presente",exZh:"我就是，我在办公室。",exPy:"Wǒ jiù shì, wǒ zài bàngōngshì.",exEs:"Soy yo; estoy en la oficina."},
+{num:6,hz:"就",py:"jiù",cat:"Adverbio",es:"Precisamente; justamente",exZh:"我就是常老师。",exPy:"Wǒ jiù shì Cháng lǎoshī.",exEs:"Soy precisamente la profesora Chang."},
+{num:7,hz:"您",py:"nín",cat:"Pronombre",es:"Usted (forma respetuosa)",exZh:"老师，您好！",exPy:"Lǎoshī, nín hǎo!",exEs:"¡Hola, profesora!"},
+{num:8,hz:"哪",py:"nǎ / něi",cat:"Pronombre interrogativo",es:"Cuál; qué",exZh:"您是哪位？",exPy:"Nín shì nǎ wèi?",exEs:"¿Quién es usted?"},
+{num:9,hz:"位",py:"wèi",cat:"Clasificador",es:"Clasificador cortés para personas",exZh:"两位老师",exPy:"Liǎng wèi lǎoshī",exEs:"Dos profesores."},
+{num:10,hz:"下午",py:"xiàwǔ",cat:"Sustantivo temporal",es:"Por la tarde",exZh:"今天下午我有时间。",exPy:"Jīntiān xiàwǔ wǒ yǒu shíjiān.",exEs:"Esta tarde tengo tiempo."},
+{num:11,hz:"时间",py:"shíjiān",cat:"Sustantivo",es:"Tiempo",exZh:"您今天下午有时间吗？",exPy:"Nín jīntiān xiàwǔ yǒu shíjiān ma?",exEs:"¿Tiene tiempo esta tarde?"},
+{num:12,hz:"问题",py:"wèntí",cat:"Sustantivo",es:"Pregunta; problema",exZh:"我想问您几个问题。",exPy:"Wǒ xiǎng wèn nín jǐ ge wèntí.",exEs:"Quiero hacerle unas cuantas preguntas."},
+{num:13,hz:"要",py:"yào",cat:"Verbo modal",es:"Querer; necesitar; ir a",exZh:"今天下午我要开会。",exPy:"Jīntiān xiàwǔ wǒ yào kāi huì.",exEs:"Esta tarde voy a tener una reunión."},
+{num:14,hz:"开会",py:"kāi huì",cat:"Verbo separable",es:"Tener una reunión",exZh:"老师在开会。",exPy:"Lǎoshī zài kāi huì.",exEs:"La profesora está en una reunión."},
+{num:15,hz:"上午",py:"shàngwǔ",cat:"Sustantivo temporal",es:"Por la mañana",exZh:"明天上午我有两节课。",exPy:"Míngtiān shàngwǔ wǒ yǒu liǎng jié kè.",exEs:"Mañana por la mañana tengo dos clases."},
+{num:16,hz:"节",py:"jié",cat:"Clasificador",es:"Clasificador para clases",exZh:"三节课",exPy:"Sān jié kè",exEs:"Tres clases."},
+{num:17,hz:"课",py:"kè",cat:"Sustantivo",es:"Clase; lección",exZh:"我们上课吧。",exPy:"Wǒmen shàng kè ba.",exEs:"Empecemos la clase."},
+{num:18,hz:"年级",py:"niánjí",cat:"Sustantivo",es:"Curso; año escolar",exZh:"二年级",exPy:"Èr niánjí",exEs:"Segundo curso."},
+{num:19,hz:"考试",py:"kǎo shì",cat:"Verbo / sustantivo",es:"Examinarse; examen",exZh:"我下个星期要考中文。",exPy:"Wǒ xià ge xīngqī yào kǎo Zhōngwén.",exEs:"La semana que viene tengo examen de chino."},
+{num:20,hz:"以后",py:"yǐhòu",cat:"Adverbio temporal",es:"Después; más tarde",exZh:"四点以后才有空儿。",exPy:"Sì diǎn yǐhòu cái yǒu kòngr.",exEs:"No tengo tiempo libre hasta después de las cuatro."},
+{num:21,hz:"空(儿)",py:"kòng(r)",cat:"Sustantivo",es:"Tiempo libre",exZh:"您什么时候有空儿？",exPy:"Nín shénme shíhou yǒu kòngr?",exEs:"¿Cuándo tiene tiempo libre?"},
+{num:22,hz:"要是",py:"yàoshi",cat:"Conjunción",es:"Si (condicional)",exZh:"要是您方便，我到您的办公室去。",exPy:"Yàoshi nín fāngbiàn, wǒ dào nín de bàngōngshì qù.",exEs:"Si le viene bien, voy a su oficina."},
+{num:23,hz:"方便",py:"fāngbiàn",cat:"Adjetivo",es:"Conveniente; venir bien",exZh:"你方便吗？",exPy:"Nǐ fāngbiàn ma?",exEs:"¿Te viene bien?"},
+{num:24,hz:"到",py:"dào",cat:"Verbo / preposición",es:"Llegar a; hacia",exZh:"四点半我到您的办公室去。",exPy:"Sì diǎn bàn wǒ dào nín de bàngōngshì qù.",exEs:"A las cuatro y media voy a su oficina."},
+{num:25,hz:"办公室",py:"bàngōngshì",cat:"Sustantivo",es:"Oficina",exZh:"我在办公室等你。",exPy:"Wǒ zài bàngōngshì děng nǐ.",exEs:"Te espero en la oficina."},
+{num:26,hz:"行",py:"xíng",cat:"Expresión",es:"Vale; de acuerdo",exZh:"四点半，行吗？",exPy:"Sì diǎn bàn, xíng ma?",exEs:"A las cuatro y media, ¿vale?"},
+{num:27,hz:"等",py:"děng",cat:"Verbo",es:"Esperar",exZh:"我等你的电话。",exPy:"Wǒ děng nǐ de diànhuà.",exEs:"Espero tu llamada."},
+{num:28,hz:"别",py:"bié",cat:"Adverbio",es:"No… (imperativo negativo)",exZh:"别客气！",exPy:"Bié kèqi!",exEs:"¡No hay de qué!"},
+{num:29,hz:"客气",py:"kèqi",cat:"Adjetivo",es:"Cortés; educado",exZh:"别客气！",exPy:"Bié kèqi!",exEs:"¡No hay de qué!"},
+{num:30,hz:"常老师",py:"Cháng lǎoshī",cat:"Nombre propio",es:"Profesor/a Chang",exZh:"常老师在吗？",exPy:"Cháng lǎoshī zài ma?",exEs:"¿Está la profesora Chang?"},
+{num:31,hz:"下个",py:"xià ge",cat:"Determinante temporal",es:"Próximo; siguiente",exZh:"下个星期",exPy:"Xià ge xīngqī",exEs:"La semana que viene."},
+{num:32,hz:"中文",py:"Zhōngwén",cat:"Sustantivo",es:"Idioma chino",exZh:"说中文",exPy:"Shuō Zhōngwén",exEs:"Hablar chino."},
+{num:33,hz:"帮",py:"bāng",cat:"Verbo",es:"Ayudar",exZh:"你帮我准备一下。",exPy:"Nǐ bāng wǒ zhǔnbèi yí xià.",exEs:"Ayúdame a prepararlo un momento."},
+{num:34,hz:"准备",py:"zhǔnbèi",cat:"Verbo",es:"Preparar",exZh:"准备考试",exPy:"Zhǔnbèi kǎo shì",exEs:"Preparar el examen."},
+{num:35,hz:"练习",py:"liànxí",cat:"Verbo",es:"Practicar",exZh:"跟我练习说中文。",exPy:"Gēn wǒ liànxí shuō Zhōngwén.",exEs:"Practica hablar chino conmigo."},
+{num:36,hz:"说",py:"shuō",cat:"Verbo",es:"Hablar; decir",exZh:"不说",exPy:"Bù shuō",exEs:"No decir."},
+{num:37,hz:"但是",py:"dànshì",cat:"Conjunción",es:"Pero; sin embargo",exZh:"但是你得请我喝咖啡。",exPy:"Dànshì nǐ děi qǐng wǒ hē kāfēi.",exEs:"Pero me tienes que invitar a un café."},
+{num:38,hz:"得",py:"děi",cat:"Verbo modal",es:"Tener que; deber",exZh:"你得去。",exPy:"Nǐ děi qù.",exEs:"Tienes que ir."},
+{num:39,hz:"跟",py:"gēn",cat:"Preposición",es:"Con",exZh:"我跟你见面。",exPy:"Wǒ gēn nǐ jiàn miàn.",exEs:"Quedo contigo."},
+{num:40,hz:"见面",py:"jiàn miàn",cat:"Verbo separable",es:"Verse; encontrarse",exZh:"什么时候见面？",exPy:"Shénme shíhou jiàn miàn?",exEs:"¿Cuándo nos vemos?"},
+{num:41,hz:"回来",py:"huí lai",cat:"Verbo direccional",es:"Volver; regresar",exZh:"我回来以后给你打电话。",exPy:"Wǒ huí lai yǐhòu gěi nǐ dǎ diànhuà.",exEs:"Cuando vuelva, te llamaré."},
+{num:42,hz:"几",py:"jǐ",cat:"Pronombre / numeral",es:"Cuántos; unos cuantos (+ clasificador)",exZh:"今天我有几个考试。",exPy:"Jīntiān wǒ yǒu jǐ ge kǎoshì.",exEs:"Hoy tengo unos cuantos exámenes."},
+{num:43,hz:"没(有)事儿",py:"méi(yǒu) shìr",cat:"Expresión verbal",es:"No tener nada que hacer; estar libre",exZh:"明天常老师没有事儿。",exPy:"Míngtiān Cháng lǎoshī méiyǒu shìr.",exEs:"Mañana la profesora Chang no tiene nada que hacer."},
+{num:44,hz:"不忙",py:"bù máng",cat:"Adjetivo / expresión",es:"No estar ocupado",exZh:"我今天不忙，没有事儿。",exPy:"Wǒ jīntiān bù máng, méiyǒu shìr.",exEs:"Hoy no estoy ocupado, no tengo nada que hacer."},
+{num:45,hz:"没问题",py:"méi wèntí",cat:"Expresión",es:"No hay problema; sin problema",exZh:"四点半，没问题。",exPy:"Sì diǎn bàn, méi wèntí.",exEs:"A las cuatro y media, no hay problema."},
+{num:46,hz:"英文",py:"Yīngwén",cat:"Sustantivo",es:"Idioma inglés",exZh:"我们明天有两节英文课。",exPy:"Wǒmen míngtiān yǒu liǎng jié Yīngwén kè.",exEs:"Mañana tenemos dos clases de inglés."},
+{num:47,hz:"电影",py:"diànyǐng",cat:"Sustantivo",es:"Película; cine",exZh:"我想看中国电影。",exPy:"Wǒ xiǎng kàn Zhōngguó diànyǐng.",exEs:"Quiero ver una película china."},
+{num:48,hz:"医生",py:"yīshēng",cat:"Sustantivo",es:"Médico/a",exZh:"我明天给三位医生打电话。",exPy:"Wǒ míngtiān gěi sān wèi yīshēng dǎ diànhuà.",exEs:"Mañana llamaré por teléfono a tres médicos."},
+{num:49,hz:"美国",py:"Měiguó",cat:"Sustantivo propio",es:"Estados Unidos",exZh:"别去美国。",exPy:"Bié qù Měiguó.",exEs:"No vayas a Estados Unidos."},
+{num:50,hz:"大学",py:"dàxué",cat:"Sustantivo",es:"Universidad",exZh:"我是大学二年级的学生。",exPy:"Wǒ shì dàxué èr niánjí de xuésheng.",exEs:"Soy estudiante de segundo curso de universidad."},
+{num:51,hz:"学生",py:"xuésheng",cat:"Sustantivo",es:"Estudiante",exZh:"我明天要给学生开会。",exPy:"Wǒ míngtiān yào gěi xuésheng kāi huì.",exEs:"Mañana voy a organizar una reunión para los estudiantes."},
+{num:52,hz:"问",py:"wèn",cat:"Verbo",es:"Preguntar; hacer preguntas",exZh:"我想问您几个问题。",exPy:"Wǒ xiǎng wèn nín jǐ ge wèntí.",exEs:"Quiero hacerle unas cuantas preguntas."},
+{num:53,hz:"想",py:"xiǎng",cat:"Verbo modal",es:"Querer; tener ganas de",exZh:"我想去办公室。",exPy:"Wǒ xiǎng qù bàngōngshì.",exEs:"Quiero ir a la oficina."}
+];
+
+const TEXT_TEMA5_1 = [
+{zh:"谁呀？",py:"Shéi ya?",es:"¿Quién es?"},
+{zh:"是我，王朋，还有李友。",py:"Shì wǒ, Wáng Péng, hái yǒu Lǐ Yǒu.",es:"Soy yo, Wang Peng, y también Li You."},
+{zh:"请进，请进，快进来！来，我介绍一下，这是我姐姐，高小音。",py:"Qǐng jìn, qǐng jìn, kuài jìn lai! Lái, wǒ jièshào yí xià, zhè shì wǒ jiějie, Gāo Xiǎoyīn.",es:"Adelante, entren. ¡Vengan, les presento a mi hermana mayor, Gao Xiaoyin."},
+{zh:"小音，你好。认识你很高兴。",py:"Xiǎoyīn, nǐ hǎo. Rènshi nǐ hěn gāoxìng.",es:"Hola, Xiaoyin. Encantado de conocerte."},
+{zh:"认识你们我也很高兴。",py:"Rènshi nǐmen wǒ yě hěn gāoxìng.",es:"Encantada de conoceros también."},
+{zh:"你们家很大，也很漂亮。",py:"Nǐmen jiā hěn dà, yě hěn piàoliang.",es:"Vuestra casa es muy grande y bonita."},
+{zh:"是吗？请坐，请坐。",py:"Shì ma? Qǐng zuò, qǐng zuò.",es:"¿Ah, sí? Sentaos, por favor."},
+{zh:"小音，你在哪儿工作？",py:"Xiǎoyīn, nǐ zài nǎr gōngzuò?",es:"Xiaoyin, ¿dónde trabajas?"},
+{zh:"我在学校工作。你们想喝点儿什么？喝茶还是喝咖啡？",py:"Wǒ zài xuéxiào gōngzuò. Nǐmen xiǎng hē diǎnr shénme? Hē chá háishi hē kāfēi?",es:"Trabajo en la escuela. ¿Qué queréis beber? ¿Té o café?"},
+{zh:"我喝茶吧。",py:"Wǒ hē chá ba.",es:"Yo tomaré té."},
+{zh:"我要一瓶可乐，可以吗？",py:"Wǒ yào yì píng kělè, kěyǐ ma?",es:"Quiero una botella de refresco de cola, ¿puede ser?"},
+{zh:"对不起，我们家没有可乐。",py:"Duìbuqǐ, wǒmen jiā méiyǒu kělè.",es:"Lo siento, en nuestra casa no tenemos refresco de cola."},
+{zh:"那给我一杯水吧。",py:"Nà gěi wǒ yì bēi shuǐ ba.",es:"Entonces, dame un vaso de agua."}
+];
+const TEXT_TEMA5_2 = [
+{zh:"昨天晚上，王朋和李友去高文中家玩儿。",py:"Zuótiān wǎnshang, Wáng Péng hé Lǐ Yǒu qù Gāo Wénzhōng jiā wánr.",es:"Ayer por la noche, Wang Peng y Li You fueron a casa de Gao Wenzhong a pasar el rato."},
+{zh:"在高文中家，他们认识了高文中的姐姐。",py:"Zài Gāo Wénzhōng jiā, tāmen rènshi le Gāo Wénzhōng de jiějie.",es:"En casa de Gao Wenzhong, conocieron a su hermana mayor."},
+{zh:"她叫高小音，在学校的图书馆工作。",py:"Tā jiào Gāo Xiǎoyīn, zài xuéxiào de túshūguǎn gōngzuò.",es:"Se llama Gao Xiaoyin y trabaja en la biblioteca de la escuela."},
+{zh:"她请王朋喝茶，王朋喝了两杯。",py:"Tā qǐng Wáng Péng hē chá, Wáng Péng hē le liǎng bēi.",es:"Invitó a Wang Peng a tomar té y Wang Peng bebió dos tazas."},
+{zh:"李友不喝茶，只喝了一杯水。",py:"Lǐ Yǒu bù hē chá, zhǐ hē le yì bēi shuǐ.",es:"Li You no toma té; solo bebió un vaso de agua."},
+{zh:"他们一起聊天儿、看电视。",py:"Tāmen yìqǐ liáo tiānr, kàn diànshì.",es:"Charlaron y vieron la televisión juntos."},
+{zh:"王朋和李友晚上十二点才回家。",py:"Wáng Péng hé Lǐ Yǒu wǎnshang shí'èr diǎn cái huí jiā.",es:"Wang Peng y Li You no volvieron a casa hasta las doce de la noche."}
+];
+const TEXT_TEMA6_1 = [
+{zh:"喂？",py:"Wéi?",es:"¿Diga?"},
+{zh:"喂，请问，常老师在吗？",py:"Wéi, qǐng wèn, Cháng lǎoshī zài ma?",es:"Hola, disculpe, ¿está la profesora Chang?"},
+{zh:"我就是。您是哪位？",py:"Wǒ jiù shì. Nín shì nǎ wèi?",es:"Soy yo. ¿Quién habla?"},
+{zh:"老师，您好。我是李友。",py:"Lǎoshī, nín hǎo. Wǒ shì Lǐ Yǒu.",es:"Hola, profesora. Soy Li You."},
+{zh:"李友，有事儿吗？",py:"Lǐ Yǒu, yǒu shìr ma?",es:"Li You, ¿ocurre algo?"},
+{zh:"老师，今天下午您有时间吗？我想问您几个问题。",py:"Lǎoshī, jīntiān xiàwǔ nín yǒu shíjiān ma? Wǒ xiǎng wèn nín jǐ ge wèntí.",es:"Profesora, ¿tiene tiempo esta tarde? Me gustaría hacerle unas preguntas."},
+{zh:"对不起，今天下午我要开会。",py:"Duìbuqǐ, jīntiān xiàwǔ wǒ yào kāi huì.",es:"Lo siento, esta tarde tengo una reunión."},
+{zh:"明天呢？",py:"Míngtiān ne?",es:"¿Y mañana?"},
+{zh:"明天上午我有两节课，下午三点要给二年级考试。",py:"Míngtiān shàngwǔ wǒ yǒu liǎng jié kè, xiàwǔ sān diǎn yào gěi èr niánjí kǎo shì.",es:"Mañana por la mañana tengo dos clases y a las tres de la tarde tengo que examinar al segundo curso."},
+{zh:"您什么时候有空儿？",py:"Nín shénme shíhou yǒu kòngr?",es:"¿Cuándo tiene tiempo libre?"},
+{zh:"明天四点以后才有空儿。",py:"Míngtiān sì diǎn yǐhòu cái yǒu kòngr.",es:"Mañana no tendré tiempo libre hasta después de las cuatro."},
+{zh:"要是您方便，四点半我到您的办公室去，行吗？",py:"Yàoshi nín fāngbiàn, sì diǎn bàn wǒ dào nín de bàngōngshì qù, xíng ma?",es:"Si le viene bien, voy a su despacho a las cuatro y media. ¿Le parece?"},
+{zh:"四点半，没问题。我在办公室等你。",py:"Sì diǎn bàn, méi wèntí. Wǒ zài bàngōngshì děng nǐ.",es:"A las cuatro y media, no hay problema. Te espero en la oficina."},
+{zh:"谢谢您。",py:"Xièxie nín.",es:"Muchas gracias."},
+{zh:"别客气。",py:"Bié kèqi.",es:"De nada; no hay de qué."}
+];
+const TEXT_TEMA6_2 = [
+{zh:"喂，请问，王朋在吗？",py:"Wéi, qǐng wèn, Wáng Péng zài ma?",es:"Hola, disculpe, ¿está Wang Peng?"},
+{zh:"我就是。你是李友吧？",py:"Wǒ jiù shì. Nǐ shì Lǐ Yǒu ba?",es:"Soy yo. Tú eres Li You, ¿verdad?"},
+{zh:"王朋，我下个星期要考中文，你帮我准备一下，跟我练习说中文，好吗？",py:"Wáng Péng, wǒ xià ge xīngqī yào kǎo Zhōngwén, nǐ bāng wǒ zhǔnbèi yí xià, gēn wǒ liànxí shuō Zhōngwén, hǎo ma?",es:"Wang Peng, la semana que viene tengo examen de chino. ¿Me ayudas a prepararlo y practicas hablar chino conmigo?"},
+{zh:"好啊，但是你得请我喝咖啡。",py:"Hǎo a, dànshì nǐ děi qǐng wǒ hē kāfēi.",es:"Vale, pero tienes que invitarme a un café."},
+{zh:"喝咖啡，没问题。那我什么时候跟你见面？你今天晚上有空儿吗？",py:"Hē kāfēi, méi wèntí. Nà wǒ shénme shíhou gēn nǐ jiàn miàn? Nǐ jīntiān wǎnshang yǒu kòngr ma?",es:"Un café, sin problema. ¿Cuándo quedamos? ¿Tienes tiempo esta noche?"},
+{zh:"今天晚上白英爱请我吃饭。",py:"Jīntiān wǎnshang Bái Yīng'ài qǐng wǒ chī fàn.",es:"Esta noche Bai Ying'ai me invita a cenar."},
+{zh:"是吗？白英爱请你吃饭？",py:"Shì ma? Bái Yīng'ài qǐng nǐ chī fàn?",es:"¿Ah, sí? ¿Bai Ying'ai te invita a cenar?"},
+{zh:"对。我回来以后给你打电话。",py:"Duì. Wǒ huí lai yǐhòu gěi nǐ dǎ diànhuà.",es:"Sí. Cuando vuelva, te llamaré."},
+{zh:"好，我等你的电话。",py:"Hǎo, wǒ děng nǐ de diànhuà.",es:"Vale, espero tu llamada."}
+];
+const TEXT_TEMA6_3 = [
+{zh:"喂？你是王朋吗？",py:"Wéi? Nǐ shì Wáng Péng ma?",es:"¿Diga? ¿Eres Wang Peng?"},
+{zh:"我就是，你有事儿吗？你明天有事儿吗？",py:"Wǒ jiù shì, nǐ yǒu shìr ma? Nǐ míngtiān yǒu shìr ma?",es:"Soy yo, ¿ocurre algo? ¿Tienes algo que hacer mañana?"},
+{zh:"我六点才有事儿，考试以后我可以问几个问题吗？",py:"Wǒ liù diǎn cái yǒu shìr, kǎoshì yǐhòu wǒ kěyǐ wèn jǐ ge wèntí ma?",es:"No tengo cosas que hacer hasta las seis; después del examen, ¿puedo hacer unas cuantas preguntas?"},
+{zh:"我们今天晚上要请朋友喝咖啡。",py:"Wǒmen jīntiān wǎnshang yào qǐng péngyou hē kāfēi.",es:"Hoy por la noche vamos a invitar a unos amigos a tomar café. (Pág. 159)"},
+{zh:"我们明天上午不去同学家练习中文。",py:"Wǒmen míngtiān shàngwǔ bú qù tóngxué jiā liànxí Zhōngwén.",es:"Mañana por la mañana no vamos a casa del compañero a practicar chino. (Pág. 159)"},
+{zh:"我们明天下午去老师的办公室问问题，怎么样？",py:"Wǒmen míngtiān xiàwǔ qù lǎoshī de bàngōngshì wèn wèntí, zěnmeyàng?",es:"Mañana por la tarde vamos a la oficina del profesor a hacer preguntas, ¿qué tal? (Pág. 159)"}
+];
+
+const PRACTICE_BANKS = {
+2:[
+{q:"我介绍___，这是我姐姐。",bank:["一下","点儿","了","才"],opts:["一下","点儿","了","才"],correct:0,why:"一下 suaviza o presenta una acción breve: 介绍一下。"},
+{q:"你想喝___什么？",bank:["一下","点儿","了","在"],opts:["一下","点儿","了","在"],correct:1,why:"点儿 expresa una pequeña cantidad: 喝点儿什么。"},
+{q:"王朋喝___两杯茶。",bank:["在","吧","了","呀"],opts:["在","吧","了","呀"],correct:2,why:"了 marca aquí una acción realizada: 喝了两杯茶。"},
+{q:"他们晚上十二点___回家。",bank:["才","吗","给","进"],opts:["才","吗","给","进"],correct:0,why:"才 indica que la acción ocurrió más tarde de lo esperado."}
+],
+3:[
+{q:"¿Qué frase coloca 在 + lugar antes de la acción?",opts:["A. 我学习在图书馆中文。","B. 我在图书馆学习中文。","C. 我学习中文在图书馆。"],correct:1,why:"La ubicación suele ir antes del verbo: sujeto + 在 + lugar + acción."},
+{q:"¿Cuál es la negación habitual de una acción pasada con 没有?",opts:["A. 我没有去了图书馆。","B. 我不去图书馆了。","C. 我没有去图书馆。"],correct:2,why:"Con 没有 + verbo no se añade 了 aspectual al verbo."},
+{q:"¿Qué frase usa correctamente 一下?",opts:["A. 你看一点这个人。","B. 你看一下这个人。","C. 你看才这个人。"],correct:1,why:"一下 puede colocarse después del verbo para presentar la acción como breve o suavizada."}
+],
+4:[
+{q:"高小音在学校的图书馆工作。<br><br><b>高小音在哪儿工作？</b>",opts:["A. 在家","B. 在学校的图书馆","C. 在医院"],correct:1,why:"La frase dice que trabaja en la biblioteca de la escuela."},
+{q:"李友不喝茶，只喝了一杯水。<br><br><b>李友喝了什么？</b>",opts:["A. 茶","B. 咖啡","C. 一杯水"],correct:2,why:"只 indica que solo bebió un vaso de agua."},
+{q:"王朋和李友晚上十二点才回家。<br><br><b>他们几点回家？</b>",opts:["A. 十点","B. 十一点","C. 十二点"],correct:2,why:"La frase indica que volvieron a casa a las doce."}
+],
+5:[
+{audio:"高小音在学校工作。",statement:"Gao Xiaoyin trabaja en la escuela.",correct:"O",why:"La frase escuchada coincide con la afirmación."},
+{audio:"李友喝了一瓶可乐。",statement:"Li You bebió un vaso de agua.",correct:"X",why:"El audio dice que bebió una botella de refresco de cola, no un vaso de agua."},
+{audio:"王朋喝了两杯茶。",statement:"Wang Peng bebió dos tazas de té.",correct:"O",why:"La frase escuchada coincide con la afirmación."}
+],
+6:[
+{audio:"你在哪儿工作？",images:[{emoji:"🏢",label:"En el trabajo",id:0},{emoji:"🏠",label:"En casa",id:1},{emoji:"⚽",label:"Haciendo deporte",id:2}],correct:0,why:"La frase pregunta dónde trabajas; la opción elegida representa el lugar de trabajo."},
+{audio:"我们一起看电视。",images:[{emoji:"📖",label:"Leer un libro",id:0},{emoji:"📺",label:"Ver la televisión",id:1},{emoji:"💃",label:"Bailar",id:2}],correct:1,why:"看电视 significa ver la televisión."}
+],
+7:[
+{audio:"你想喝点儿什么？",opts:["A. 我喝茶吧。","B. 我很好。","C. 我在学校。","D. 再见！"],correct:0,why:"La pregunta es qué quieres beber; 我喝茶吧 responde proponiendo té."},
+{audio:"认识你很高兴！",opts:["A. 对不起。","B. 认识你我也很高兴！","C. 我不喝咖啡。","D. 太好了！"],correct:1,why:"La respuesta natural es expresar también alegría por conocer a la otra persona."}
+]};
+
+const STORAGE_KEY = 'aprueba-chino-v2';
+let state = loadState();
+let currentTheme = state.currentTheme || 5;
+let currentSection = 'home';
+let dictTab = 'current';
+let storyMode = 'all';
+let flashDeck = [];
+let flashIndex = 0;
+let flashRevealed = false;
+let flashMode = 'hanzi';
+let dictationList = [];
+let dictationIndex = 0;
+let practiceType = 2;
+let practiceIndex = 0;
+let practiceItems = [];
+let practiceScore = 0;
+let practiceAnswered = false;
+let voiceList = [];
+let speechTimer = null;
+
+function emptyState(){return {currentTheme:5,learned:{5:[],6:[]},reviewed:{5:[],6:[]},correctAnswers:0,practiceRuns:0,lastStudy:null};}
+function loadState(){
+  try { const raw=localStorage.getItem(STORAGE_KEY); if(!raw)return emptyState(); const parsed=JSON.parse(raw); const base=emptyState(); return {...base,...parsed,learned:{...base.learned,...(parsed.learned||{})},reviewed:{...base.reviewed,...(parsed.reviewed||{})}}; }
+  catch(e){ return emptyState(); }
+}
+function saveState(){
+  try { state.currentTheme=currentTheme; state.lastStudy=new Date().toISOString(); localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); }
+  catch(e){ console.warn('No se pudo guardar el progreso en este navegador.',e); }
+}
+function getVocab(theme=currentTheme){return theme===5?VOCAB_TEMA_5:VOCAB_TEMA_6;}
+function normalise(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function selectTheme(theme){
+  if(theme!==5&&theme!==6)return;
+  currentTheme=theme; saveState();
+  document.getElementById('btn-theme-5').classList.toggle('active',theme===5);
+  document.getElementById('btn-theme-6').classList.toggle('active',theme===6);
+  document.getElementById('active-theme-label').textContent=`TEMA ${theme} ACTIVO`;
+  document.getElementById('nav-checker').classList.toggle('hidden',theme!==6);
+  document.getElementById('nav-exam').classList.toggle('hidden',theme!==5);
+  document.getElementById('nav-dictado').classList.toggle('hidden',theme!==5);
+  if((theme===5&&['checker'].includes(currentSection))||(theme===6&&['exam-hub','dictado','practice-runner'].includes(currentSection))) navigateById('home');
+  renderDictionary(); renderStories(); renderGrammar(); updateDashboard();
+  if(currentSection==='flash'){initFlashDeck();}
+}
+function navigate(id,button){
+  if(!document.getElementById(`sec-${id}`))return;
+  if((id==='checker'&&currentTheme!==6)||( ['exam-hub','dictado','practice-runner'].includes(id)&&currentTheme!==5))return;
+  currentSection=id;
+  document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===`sec-${id}`));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b===button));
+  if(!button){const nav=document.querySelector(`.nav-btn[data-section="${id}"]`);if(nav)nav.classList.add('active');}
+  const labels={home:['Inicio y progreso','Organiza tu estudio y comprueba qué necesitas repasar.'],dict:['Diccionario','Busca palabras y escucha frases de ejemplo.'],flash:['Flashcards','Recuerda activamente el vocabulario.'],checker:['Entrenador de gramática','Practica estructuras del tema 6.'], 'exam-hub':['Modelos de examen','Practica los modelos de examen del tema 5.'],dictado:['Dictado','Escucha, escribe y comprueba.'],stories:['Diálogos e historias','Lee y escucha las conversaciones de cada tema.'],gram:['Apuntes de gramática','Repasa las estructuras importantes.'],'practice-runner':['Práctica de examen','Responde y revisa tu resultado.']};
+  document.getElementById('page-title').textContent=labels[id][0];document.getElementById('page-subtitle').textContent=labels[id][1];
+  if(id==='dict')renderDictionary(); if(id==='flash'&&!flashDeck.length)initFlashDeck(); if(id==='stories')renderStories(); if(id==='gram')renderGrammar(); if(id==='dictado'&&!dictationList.length)startDictation();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function navigateById(id){navigate(id,null);}
+
+function switchDictTab(tab){dictTab=tab;document.getElementById('dict-tab-current').classList.toggle('active',tab==='current');document.getElementById('dict-tab-global').classList.toggle('active',tab==='global');renderDictionary();}
+function renderDictionary(){
+  const input=document.getElementById('global-search');if(!input)return;
+  const q=normalise(input.value);
+  let entries=(dictTab==='global'?[...VOCAB_TEMA_5.map(w=>({...w,theme:5})),...VOCAB_TEMA_6.map(w=>({...w,theme:6}))]:getVocab().map(w=>({...w,theme:currentTheme})));
+  if(q)entries=entries.filter(w=>normalise(w.hz).includes(q)||normalise(w.py).includes(q)||normalise(w.es).includes(q)||normalise(w.cat).includes(q));
+  const container=document.getElementById('dict-list-container');
+  if(!entries.length){container.innerHTML='<div class="empty-state">No se han encontrado palabras. Prueba con otro carácter, pinyin o significado.</div>';return;}
+  container.innerHTML=entries.map((w,i)=>{
+    const key=`${w.theme}-${w.num}`;
+    return `<article class="dict-card"><div class="dict-head"><div><div class="word-meta">TEMA ${w.theme} · #${w.num} · ${escapeHTML(w.cat)}</div><div><span class="word-hanzi">${escapeHTML(w.hz)}</span><span class="word-pinyin">${escapeHTML(w.py)}</span></div></div><div class="word-meaning">${escapeHTML(w.es)}</div></div><div class="dict-actions"><button class="small-btn" type="button" onclick="speakByKey('${key}')">🔊 Escuchar palabra</button><button class="small-btn" type="button" aria-expanded="false" onclick="toggleExample('${key}',this)">Ver ejemplo</button><button class="small-btn" type="button" onclick="toggleLearned(${w.theme},${w.num},this)">${isLearned(w.theme,w.num)?'✓ Aprendida':'Marcar aprendida'}</button></div><div class="example" id="example-${key}"><div class="kicker">Frase de ejemplo</div><div class="zh">${escapeHTML(w.exZh)}</div><div class="py">${escapeHTML(w.exPy)}</div><div class="es">${escapeHTML(w.exEs)}</div><div class="dict-actions"><button class="small-btn" type="button" onclick="speakByKey('${key}',true)">🔊 Escuchar frase</button></div></div></article>`;
+  }).join('');
+}
+function getWord(theme,num){return getVocab(theme).find(w=>w.num===num);}
+function speakByKey(key,example=false){const [theme,num]=key.split('-').map(Number);const w=getWord(theme,num);if(w)speak(example?w.exZh:w.hz);}
+function toggleExample(key,btn){const el=document.getElementById(`example-${key}`);const open=el.classList.toggle('open');btn.textContent=open?'Ocultar ejemplo':'Ver ejemplo';btn.setAttribute('aria-expanded',String(open));}
+function isLearned(theme,num){return (state.learned[theme]||[]).includes(num);}
+function toggleLearned(theme,num,btn){const list=state.learned[theme]||[];if(list.includes(num))state.learned[theme]=list.filter(n=>n!==num);else state.learned[theme]=[...list,num];saveState();renderDictionary();updateDashboard();}
+
+function initFlashDeck(){flashDeck=[...getVocab()].sort(()=>Math.random()-.5);flashIndex=0;flashRevealed=false;renderFlash();}
+function setFlashMode(mode,btn){flashMode=mode;document.querySelectorAll('[data-flash-mode]').forEach(b=>b.classList.toggle('active',b===btn));flashRevealed=false;renderFlash();}
+function renderFlash(){
+  if(!flashDeck.length)return;
+  const w=flashDeck[flashIndex];
+  const front=document.getElementById('f-front');
+  if(flashMode==='hanzi')front.textContent=w.hz;
+  else if(flashMode==='meaning')front.textContent=w.es;
+  else front.textContent=w.py;
+  document.getElementById('f-hanzi-answer').textContent=w.hz;
+  document.getElementById('f-hanzi-answer').classList.toggle('hidden',flashMode==='hanzi');
+  document.getElementById('f-py').textContent=w.py;
+  document.getElementById('f-es').textContent=w.es;
+  document.getElementById('f-back').classList.toggle('hidden',!flashRevealed);
+  document.getElementById('flash-hint').textContent=flashRevealed?'Respuesta':'Piensa en la respuesta y pulsa para revelar.';
+  document.getElementById('flash-counter').textContent=`Tarjeta ${flashIndex+1} de ${flashDeck.length}`;
+  document.getElementById('flash-progress-note').textContent=`Aprendidas: ${(state.learned[currentTheme]||[]).length} de ${getVocab().length}. Las tarjetas se mezclan al iniciar una nueva tanda.`;
+}
+function flipFlash(){if(!flashDeck.length)return;flashRevealed=!flashRevealed;renderFlash();if(flashRevealed)speak(flashDeck[flashIndex].hz);}
+function nextFlash(){if(!flashDeck.length)return;flashIndex=(flashIndex+1)%flashDeck.length;flashRevealed=false;renderFlash();}
+function previousFlash(){if(!flashDeck.length)return;flashIndex=(flashIndex-1+flashDeck.length)%flashDeck.length;flashRevealed=false;renderFlash();}
+function rateFlash(known){if(!flashDeck.length||!flashRevealed){showToastlessFlashHint();return;}const w=flashDeck[flashIndex];const list=state.learned[currentTheme]||[];if(known&&!list.includes(w.num))state.learned[currentTheme]=[...list,w.num];if(!known){state.learned[currentTheme]=list.filter(n=>n!==w.num);state.reviewed[currentTheme]=[...new Set([...(state.reviewed[currentTheme]||[]),w.num])];}saveState();updateDashboard();renderFlash();nextFlash();}
+function showToastlessFlashHint(){document.getElementById('flash-hint').textContent='Primero voltea la tarjeta para ver la respuesta.';}
+
+function setStoryMode(mode,btn){storyMode=mode;document.querySelectorAll('#sec-stories .mode-btn').forEach(b=>b.classList.toggle('active',b===btn));renderStories();}
+function renderStories(){
+  const d1=currentTheme===5?TEXT_TEMA5_1:TEXT_TEMA6_1;const d2=currentTheme===5?TEXT_TEMA5_2:TEXT_TEMA6_2;
+  document.getElementById('t-story1-title').textContent=currentTheme===5?'Texto 1 · Visita a casa de Gao Wenzhong':'Diálogo 1 · Llamar a la profesora';
+  document.getElementById('t-story2-title').textContent=currentTheme===5?'Texto 2 · Resumen de la velada':'Diálogo 2 · Llamar a un amigo para pedir ayuda';
+  renderStoryLines('story1-list',d1);renderStoryLines('story2-list',d2);
+  const card3=document.getElementById('story3-card');
+  if(card3){
+    card3.classList.toggle('hidden',currentTheme!==6);
+    if(currentTheme===6){
+      document.getElementById('t-story3-title').textContent='Diálogo de clase y frases del libro (Pág. 159)';
+      renderStoryLines('story3-list',TEXT_TEMA6_3);
+    }
+  }
+}
+function renderStoryLines(id,lines){
+  const box=document.getElementById(id);box.innerHTML=lines.map((line,i)=>{
+    let body='';if(storyMode==='all'||storyMode==='hz')body+=`<div class="story-zh">${escapeHTML(line.zh)}</div>`;if(storyMode==='all'||storyMode==='py')body+=`<div class="story-py">${escapeHTML(line.py)}</div>`;if(storyMode==='all'||storyMode==='es')body+=`<div class="story-es">${escapeHTML(line.es)}</div>`;
+    return `<div class="story-line"><div class="story-line-content">${body}</div><button class="audio-btn" type="button" aria-label="Escuchar línea ${i+1}" onclick="speakLine('${id}',${i})">▶</button></div>`;
+  }).join('');
+}
+function getStoryData(which){if(currentTheme===5)return which===1?TEXT_TEMA5_1:TEXT_TEMA5_2;if(which===1)return TEXT_TEMA6_1;if(which===2)return TEXT_TEMA6_2;return TEXT_TEMA6_3;}
+function speakLine(id,index){const which=id==='story1-list'?1:(id==='story2-list'?2:3);const line=getStoryData(which)[index];if(line)speak(line.zh);}
+function playStory(which){const lines=getStoryData(which);speak(lines.map(l=>l.zh).join('。'));}
+
+function grammarCard(title,description,examples){return `<article class="story-card"><h3 class="story-title">${title}</h3><p class="muted small">${description}</p>${examples.map(e=>`<div class="grammar-example" role="button" tabindex="0" onclick="speak('${e.zh.replace(/'/g,"\\'")}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();speak('${e.zh.replace(/'/g,"\\'")}')}"><strong>${escapeHTML(e.zh)}</strong><div class="py">${escapeHTML(e.py)}</div><div class="es">${escapeHTML(e.es)} · 🔊</div></div>`).join('')}</article>`;}
+function renderGrammar(){
+  const box=document.getElementById('gram-content-box');
+  if(currentTheme===5){box.innerHTML=
+    grammarCard('1. Verbo + 一下 frente a (一)点儿','一下 suele ir después del verbo y presenta una acción como breve o suavizada. 点儿 expresa una cantidad pequeña y suele acompañar a un nombre o a una acción relacionada con cantidad.',[
+      {zh:'我介绍一下。',py:'Wǒ jièshào yí xià.',es:'Voy a presentar brevemente.'},{zh:'你想喝点儿什么？',py:'Nǐ xiǎng hē diǎnr shénme?',es:'¿Qué te apetece beber?'}])+
+    grammarCard('2. 在 para indicar ubicación','Para expresar dónde se realiza una acción, una estructura frecuente es: sujeto + 在 + lugar + verbo.',[
+      {zh:'我在大学学习。',py:'Wǒ zài dàxué xuéxí.',es:'Estudio en la universidad.'},{zh:'她在学校工作。',py:'Tā zài xuéxiào gōngzuò.',es:'Ella trabaja en la escuela.'}])+
+    grammarCard('3. 了 y la negación con 没(有)','了 puede marcar una acción realizada o un cambio de situación. En la negación de una acción pasada se usa normalmente 没(有) + verbo, sin 了 aspectual detrás del verbo.',[
+      {zh:'我喝了两杯咖啡。',py:'Wǒ hē le liǎng bēi kāfēi.',es:'He bebido dos tazas de café.'},{zh:'我没有去图书馆。',py:'Wǒ méiyǒu qù túshūguǎn.',es:'No he ido a la biblioteca.'}])+
+    grammarCard('4. 才 para una acción tardía','才 puede indicar que algo ocurre más tarde de lo esperado o solo después de cierto momento.',[
+      {zh:'王朋和李友晚上十二点才回家。',py:'Wáng Péng hé Lǐ Yǒu wǎnshang shí’èr diǎn cái huí jiā.',es:'Wang Peng y Li You no volvieron a casa hasta las doce.'}]);
+  }else{box.innerHTML=
+    grammarCard('1. 给 (gěi): dar / a / para','En una construcción de doble objeto o de destinatario, la persona puede aparecer después de 给 y antes del verbo principal. Importante: también existe la construcción válida verbo + objeto + 给 + persona, por ejemplo 打电话给他.',[
+      {zh:'我给他打电话。',py:'Wǒ gěi tā dǎ diànhuà.',es:'Le llamo por teléfono.'},{zh:'他给我打了一个电话。',py:'Tā gěi wǒ dǎ le yí ge diànhuà.',es:'Él me hizo una llamada.'},{zh:'我打电话给他。',py:'Wǒ dǎ diànhuà gěi tā.',es:'Llamo por teléfono a él.'}])+
+    grammarCard('2. 要 (yào): intención, necesidad o futuro','要 puede expresar intención o una acción prevista; su traducción depende del contexto. No se niega siempre de la misma manera: 不想 expresa no querer, mientras que 不要 puede expresar no querer o una prohibición.',[
+      {zh:'我下个星期要考中文。',py:'Wǒ xià ge xīngqī yào kǎo Zhōngwén.',es:'La semana que viene tengo examen de chino.'},{zh:'今天下午我要开会。',py:'Jīntiān xiàwǔ wǒ yào kāi huì.',es:'Esta tarde tengo una reunión.'}])+
+    grammarCard('3. 别 (bié): imperativo negativo','别 + verbo se utiliza para pedir a alguien que no haga algo.',[
+      {zh:'别客气！',py:'Bié kèqi!',es:'¡No hay de qué!'},{zh:'别说！',py:'Bié shuō!',es:'¡No hables!'}])+
+    grammarCard('4. 到 + lugar + 去','Esta estructura expresa desplazamiento hacia un lugar. El lugar aparece después de 到 y antes de 去.',[
+      {zh:'四点半我到您的办公室去。',py:'Sì diǎn bàn wǒ dào nín de bàngōngshì qù.',es:'A las cuatro y media voy a su oficina.'}])+
+    grammarCard('5. 得 (děi) y 跟 (gēn)','得 expresa obligación (“tener que”). 跟 puede equivaler a “con” y aparece en expresiones como 跟某人见面.',[
+      {zh:'但是你得请我喝咖啡。',py:'Dànshì nǐ děi qǐng wǒ hē kāfēi.',es:'Pero tienes que invitarme a un café.'},{zh:'我什么时候跟你见面？',py:'Wǒ shénme shíhou gēn nǐ jiàn miàn?',es:'¿Cuándo quedo contigo?'}])+
+    grammarCard('6. Estructura A + 给 + B + Acción (y posición de 要)','Fórmula: Sujeto (A) + [Tiempo] + [要] + 给 + Persona (B) + Acción (打电话 llamar, 开会 reunirse, 考试 examinar, 介绍 presentar). Importante: cuando la acción va dirigida a alguien (“a alguien”), 要 (futuro) se coloca después del tiempo y antes de 给.',[
+      {zh:'我今天给你打电话。',py:'Wǒ jīntiān gěi nǐ dǎ diànhuà.',es:'Hoy te llamo por teléfono.'},{zh:'你可以给我打电话吗？',py:'Nǐ kěyǐ gěi wǒ dǎ diànhuà ma?',es:'¿Tú me puedes llamar por teléfono?'},{zh:'老师给我们开会。',py:'Lǎoshī gěi wǒmen kāi huì.',es:'La profesora nos organiza una reunión.'},{zh:'我明天要给学生开会。',py:'Wǒ míngtiān yào gěi xuésheng kāi huì.',es:'Mañana voy a organizar una reunión para los estudiantes (要 va después del tiempo y antes de 给).'},{zh:'老师要给二年级考试。',py:'Lǎoshī yào gěi èr niánjí kǎoshì.',es:'La profesora va a hacer un examen al segundo curso.'}])+
+    grammarCard('7. Futuro con 要 + Verbo y su negación con 不 (sin 要)','Fórmula: 要 + Verbo = futuro (ir a hacer algo; va delante del verbo). Regla clave de negación: para negar el futuro 要 + V., se niega con 不 + Verbo y se quita el 要 (porque 不要 significa prohibición / “no hagas”).',[
+      {zh:'我要喝水。',py:'Wǒ yào hē shuǐ.',es:'Yo beberé agua (futuro: 要 + V.).'},{zh:'下个星期一要考中文。',py:'Xià ge xīngqīyī yào kǎo Zhōngwén.',es:'El lunes que viene haré un examen de chino.'},{zh:'我们明天上午不去同学家练习中文。',py:'Wǒmen míngtiān shàngwǔ bú qù tóngxué jiā liànxí Zhōngwén.',es:'Mañana por la mañana no vamos a casa del compañero a practicar chino (se niega con 不 y se quita 要).'}])+
+    grammarCard('8. 在 (zài) como verbo frente a preposición de lugar','Si en la frase no hay otro verbo, 在 funciona directamente como verbo (“estar en…”). Si ya hay otro verbo, 在 + lugar va delante de ese verbo para indicar dónde ocurre la acción.',[
+      {zh:'我在家。',py:'Wǒ zài jiā.',es:'Yo estoy en casa (no hay otro verbo; 在 actúa como verbo).'},{zh:'我在家看书。',py:'Wǒ zài jiā kàn shū.',es:'Yo estoy en casa leyendo libros (aquí ya hay otro verbo: 看书).'}])+
+    grammarCard('9. 就 (jiù) y posición de los adverbios','就 es un adverbio (“justamente / precisamente”). Regla general: los adverbios van delante del verbo (por eso puede aparecer como 我就是 o 就是我).',[
+      {zh:'就是我。',py:'Jiù shì wǒ.',es:'Soy justamente yo.'},{zh:'我就是。',py:'Wǒ jiù shì.',es:'Soy yo precisamente.'}])+
+    grammarCard('10. 哪 (nǎ) + clasificador y 位 (wèi) frente a 口 (kǒu)','Para que 哪 signifique “¿cuál / qué?”, siempre lleva un clasificador detrás (el clasificador cambia según lo que se pregunte). 口 se usa para cantidad de miembros de la familia, pero nunca con 哪. 位 es el clasificador cortés para personas (para mostrar respeto o dar importancia; va sin 人).',[
+      {zh:'哪个？',py:'Nǎ ge?',es:'¿Cuál?'},{zh:'您是哪位？',py:'Nín shì nǎ wèi?',es:'¿Quién es usted? (forma educada).'},{zh:'三位医生。',py:'Sān wèi yīshēng.',es:'Tres médicos (con respeto / importancia).'},{zh:'三位。',py:'Sān wèi.',es:'Tres personas (de manera educada, sin 人).'}])+
+    grammarCard('11. 几 (jǐ) + clasificador + cosas/personas','几 (“cuántos / unos cuantos”) requiere siempre un clasificador entre 几 y el sustantivo: 几 + clasificador + cosas/personas.',[
+      {zh:'今天我有几个考试。',py:'Jīntiān wǒ yǒu jǐ ge kǎoshì.',es:'Hoy tengo unos cuantos exámenes.'},{zh:'我想问您几个问题。',py:'Wǒ xiǎng wèn nín jǐ ge wèntí.',es:'Quiero hacerle unas cuantas preguntas (几个问题).'}])+
+    grammarCard('12. Condicional con 要是 (yàoshi) y 方便 (fāngbiàn)','要是 (“si…” condicional) solo aparece al principio de la frase o cláusula condicional. Se combina a menudo en el patrón 要是 + Sujeto + 方便 (“si a alguien le viene bien”) y con 到 + lugar + 去 (= 去 + lugar).',[
+      {zh:'要是明天我没有课，我要和你聊天(儿)。',py:'Yàoshi míngtiān wǒ méiyǒu kè, wǒ yào hé nǐ liáo tiānr.',es:'Si mañana no tengo clase, hablaré contigo.'},{zh:'要是你方便，我和你一起去。',py:'Yàoshi nǐ fāngbiàn, wǒ hé nǐ yìqǐ qù.',es:'Si te viene bien, iremos juntos.'},{zh:'要是你到中国去，……',py:'Yàoshi nǐ dào Zhōngguó qù, ...',es:'Si tú vas a China, … (到 + lugar + 去 = 去 + lugar).'}])+
+    grammarCard('13. Verbo separable 考试 (kǎo shì) y cambio de objeto','考试 significa “hacer un examen”. Regla: el objeto 试 se elimina cuando se utiliza otro objeto (como la asignatura: 考中文, no 考试中文).',[
+      {zh:'我要考试。',py:'Wǒ yào kǎo shì.',es:'Yo haré un examen.'},{zh:'我要考中文。',py:'Wǒ yào kǎo Zhōngwén.',es:'Yo haré un examen de chino (se quita 试 al poner 中文).'},{zh:'我有中文考试。',py:'Wǒ yǒu Zhōngwén kǎoshì.',es:'Tengo un examen de chino (aquí 考试 funciona como sustantivo).'},{zh:'我考中文了。',py:'Wǒ kǎo Zhōngwén le.',es:'He hecho un examen de chino.'}])+
+    grammarCard('14. 以后 (yǐhòu) y 以后才','Fórmula: Momento / Acción + 以后 (“después de…”). Combinado con 才: …以后才 (“no… hasta después de…”).',[
+      {zh:'考试以后我去喝茶。',py:'Kǎoshì yǐhòu wǒ qù hē chá.',es:'Después del examen iré a beber té.'},{zh:'看书以后我要喝咖啡。',py:'Kàn shū yǐhòu wǒ yào hē kāfēi.',es:'Después de leer libros beberé café.'},{zh:'考试以后才……',py:'Kǎoshì yǐhòu cái ...',es:'No… hasta después del examen.'}])+
+    grammarCard('15. 帮 (bāng): A + 帮 + B + hacer algo','Fórmula: Persona A + 帮 + Persona B + Verbo/Acción (“A ayuda a B a hacer algo”).',[
+      {zh:'我可以帮你吗？',py:'Wǒ kěyǐ bāng nǐ ma?',es:'¿Te puedo ayudar?'},{zh:'你可以帮我准备考试吗？',py:'Nǐ kěyǐ bāng wǒ zhǔnbèi kǎoshì ma?',es:'¿Me puedes ayudar a preparar el examen?'}])+
+    grammarCard('16. Matices clave: 下个, 没有时间, 好吗？ = 行不行？ y 点儿 vs 一下','1) 下个 (“siguiente / próximo”) se usa con semanas o meses (下个星期一), pero nunca se puede usar con “mañana” (明天). 2) Con 没有时间, 时间 va antes de 给 + persona + verbo. 3) 好吗？ equivale a 行不行？ (“¿vale? / ¿de acuerdo?”). 4) Disponibilidad: 有时间 / 没(有)事儿 / 不忙. 5) 一点儿 va antes del sustantivo (一点 siempre se puede usar; 点 solo detrás de verbo), mientras que 一下 va después del verbo.',[
+      {zh:'我们下午六点没有时间给您打电话。',py:'Wǒmen xiàwǔ liù diǎn méiyǒu shíjiān gěi nín dǎ diànhuà.',es:'No tenemos tiempo para llamarle a las 6 de la tarde (时间 va antes de 给您).'},{zh:'明天常老师没有事儿。',py:'Míngtiān Cháng lǎoshī méiyǒu shìr.',es:'Mañana la profesora Chang no tiene nada que hacer / está libre.'},{zh:'我想去办公室。',py:'Wǒ xiǎng qù bàngōngshì.',es:'Quiero ir a la oficina.'}]);
+  }
+}
+
+function checkUserSentence(){
+  const raw=document.getElementById('user-written-sentence').value.trim();const result=document.getElementById('checker-result');const title=document.getElementById('checker-title');const exp=document.getElementById('checker-explanation');const example=document.getElementById('checker-example');
+  result.hidden=false;result.className='result info';
+  if(!raw){result.className='result error';title.textContent='Escribe una frase primero';exp.textContent='Introduce una oración en caracteres chinos para poder analizar su estructura.';example.textContent='';return;}
+  const s=raw.replace(/[，。！？；、\s]/g,'');let feedback={title:'No puedo validar esta frase automáticamente',text:'No he reconocido con suficiente seguridad una de las estructuras objetivo. Eso no significa que esté mal: consulta el ejemplo del libro o pregunta a tu profesor.',example:'Consejo: prueba con una frase que use 给, 要, 别, 在, 到……去, 要是, 以后, 帮, 几 o 哪/位.'};
+  if(/打电话给.+/.test(s)){feedback={title:'Estructura con 给: posible uso correcto',text:'打电话给 + persona también es una construcción válida en chino. No la marques como incorrecta por el mero hecho de que 给 aparezca después de 打电话.',example:'Ejemplo: 我打电话给他。'};}
+  else if(/给.+打电话/.test(s)){feedback={title:'Patrón de destinatario reconocido (A + 给 + B + 打电话)',text:'La frase sigue el patrón 给 + persona + 打电话. Si hay expresión de tiempo o 要, recuerda que van antes de 给 (p. ej. 我明天要给……).',example:'Ejemplo: 我今天给你打电话。'};}
+  else if(/^要是.+/.test(s)){feedback={title:'Condicional con 要是 reconocido al inicio',text:'¡Bien colocado! 要是 va al principio de la oración condicional. Si usas 方便, el patrón habitual es 要是 + sujeto + 方便.',example:'Ejemplo: 要是你方便，我和你一起去。'};}
+  else if(/.+要是.+/.test(s)){feedback={title:'Atención a la posición de 要是',text:'Recuerda que en tus apuntes 要是 aparece al principio de la frase condicional (“si…”). Prueba a colocar 要是 al comienzo de la cláusula.',example:'Ejemplo: 要是明天我没有课，我要和你聊天(儿)。'};}
+  else if(/.+以后/.test(s)){feedback={title:'Estructura temporal con 以后 reconocida',text:'Se detecta momento/acción + 以后 (“después de…”). Si quieres expresar “no… hasta después de”, puedes añadir 才 detrás de 以后.',example:'Ejemplo: 看书以后我要喝咖啡。 / 考试以后才……'};}
+  else if(/.+帮.+/.test(s)){feedback={title:'Patrón con 帮 reconocido (A + 帮 + B + acción)',text:'Se detecta el verbo 帮 (“ayudar”). Comprueba que siga el orden: persona que ayuda + 帮 + persona ayudada + acción.',example:'Ejemplo: 你可以帮我准备考试吗？'};}
+  else if(/几[个位节课本瓶杯]/.test(s)){feedback={title:'Uso de 几 + clasificador reconocido',text:'¡Bien! Entre 几 y el sustantivo has incluido un clasificador.',example:'Ejemplo: 我想问您几个问题。'};}
+  else if(/哪[个位节]/.test(s)){feedback={title:'Uso de 哪 + clasificador reconocido',text:'¡Correcto! Para que 哪 signifique “cuál/qué”, lleva un clasificador detrás (como 个 o 位 para personas con respeto; nunca 口).',example:'Ejemplo: 您是哪位？ / 哪个？'};}
+  else if(/考中文|考英文/.test(s)){feedback={title:'Verbo separable 考试 sin 试 reconocido',text:'¡Muy bien! Al añadir el objeto de la asignatura (中文/英文), se elimina 试 y se usa 考 + asignatura.',example:'Ejemplo: 我下个星期要考中文。'};}
+  else if(/没(有)?时间给.+/.test(s)){feedback={title:'Orden correcto con 没有时间 + 给',text:'¡Bien ordenado! 时间 va antes de 给 + persona + verbo.',example:'Ejemplo: 我们下午六点没有时间给您打电话。'};}
+  else if(/^别.+/.test(s)){feedback={title:'Imperativo negativo reconocido',text:'La frase empieza con 别, que suele colocarse antes del verbo para pedir que alguien no haga algo. Comprueba que lo que sigue funcione como verbo o expresión verbal.',example:'Ejemplo: 别去美国。 / 别说！'};}
+  else if(/到.+去/.test(s)){feedback={title:'Estructura direccional reconocida',text:'Se detecta el patrón 到 + lugar + 去 (equivalente a 去 + lugar). Comprueba que el elemento entre 到 y 去 sea realmente un lugar.',example:'Ejemplo: 我到办公室去。'};}
+  else if(/在.+/.test(s)){feedback={title:'Uso de 在 detectado',text:'Si no hay otro verbo en la frase, 在 funciona como verbo (“estar en”, ej. 我在家). Si ya hay otro verbo, 在 + lugar va delante del verbo (ej. 我在家看书).',example:'Ejemplo: 我在家。 / 我在家看书。'};}
+  else if(/要.+/.test(s)){feedback={title:'Uso de 要 detectado',text:'要 + verbo expresa futuro o intención (ej. 我要喝水). Recuerda que si va con 给 + persona, 要 se coloca después del tiempo y antes de 给, y que el futuro con 要 se niega con 不 (quitando 要).',example:'Ejemplo: 我明天要给学生开会。'};}
+  title.textContent=feedback.title;exp.textContent=feedback.text;example.textContent=feedback.example;
+}
+function insertText(text){const input=document.getElementById('user-written-sentence');const start=input.selectionStart??input.value.length;const end=input.selectionEnd??input.value.length;input.focus();if(text==='BACKSPACE'){if(start===end&&start>0)input.setRangeText('',start-1,end,'end');else input.setRangeText('',start,end,'end');}else input.setRangeText(text,start,end,'end');}
+
+function startDictation(){dictationList=[...VOCAB_TEMA_5].sort(()=>Math.random()-.5).slice(0,10);dictationIndex=0;loadDictationItem();}
+function loadDictationItem(){
+  const done=dictationIndex>=dictationList.length;
+  if(done){document.getElementById('dictado-count').textContent='¡Tanda completada!';document.getElementById('dictado-res').classList.add('hidden');document.getElementById('btn-reveal').classList.add('hidden');document.getElementById('btn-next-dictado').classList.add('hidden');document.getElementById('btn-restart-dictado').classList.remove('hidden');return;}
+  document.getElementById('dictado-count').textContent=`Palabra ${dictationIndex+1} de ${dictationList.length}`;document.getElementById('dictado-res').classList.add('hidden');document.getElementById('btn-reveal').classList.remove('hidden');document.getElementById('btn-next-dictado').classList.add('hidden');document.getElementById('btn-restart-dictado').classList.add('hidden');
+  const w=dictationList[dictationIndex];document.getElementById('dictado-hz').textContent=w.hz;document.getElementById('dictado-py').textContent=w.py;document.getElementById('dictado-es').textContent=w.es;
+}
+function playDictation(){if(dictationList[dictationIndex])speak(dictationList[dictationIndex].hz);}
+function revealDictation(){document.getElementById('dictado-res').classList.remove('hidden');document.getElementById('btn-reveal').classList.add('hidden');document.getElementById('btn-next-dictado').classList.remove('hidden');}
+function nextDictation(){dictationIndex++;loadDictationItem();}
+
+function openPractice(type){
+  practiceType=type;practiceIndex=0;practiceScore=0;practiceAnswered=false;practiceItems=[...(PRACTICE_BANKS[type]||[])].sort(()=>Math.random()-.5);
+  navigateById('practice-runner');loadPracticeQuestion();
+}
+function loadPracticeQuestion(){
+  const body=document.getElementById('p-runner-body');const title=document.getElementById('p-runner-title');const progress=document.getElementById('practice-progress');const fill=document.getElementById('practice-progress-fill');body.innerHTML='';practiceAnswered=false;
+  if(practiceIndex>=practiceItems.length){
+    const pct=practiceItems.length?Math.round(practiceScore/practiceItems.length*100):0;title.textContent='Modelo completado';progress.textContent='Resultado final';fill.style.width='100%';
+    body.innerHTML=`<div class="stat" style="margin-top:16px;text-align:center"><strong style="color:${pct>=60?'var(--green)':'var(--red)'}">${practiceScore} / ${practiceItems.length}</strong><span>Respuestas correctas · ${pct}% de aciertos</span></div><p class="muted small" style="text-align:center;margin:12px 0">${pct>=80?'¡Muy buen trabajo! Repasa solo los errores.':pct>=60?'Buen intento. Repite el modelo para consolidar.':'Vuelve a estudiar el vocabulario y las reglas antes de repetir.'}</p><div class="action-row"><button class="action-btn primary" type="button" onclick="openPractice(${practiceType})">Repetir modelo</button><button class="action-btn ghost" type="button" onclick="navigateById('exam-hub')">Volver a modelos</button></div>`;
+    state.practiceRuns=(state.practiceRuns||0)+1;saveState();updateDashboard();return;
+  }
+  const item=practiceItems[practiceIndex];title.textContent=`Modelo ${practiceType}`;progress.textContent=`Pregunta ${practiceIndex+1} de ${practiceItems.length}`;fill.style.width=`${practiceIndex/practiceItems.length*100}%`;
+  let intro='';if(practiceType===2)intro=`<div class="word-bank"><strong class="small">Banco de palabras:</strong>${item.bank.map(w=>`<span class="word-chip">${escapeHTML(w)}</span>`).join('')}</div>`;
+  if(practiceType===5){body.innerHTML=`${intro}<div class="audio-play" role="button" tabindex="0" onclick="speak('${item.audio.replace(/'/g,"\\'")}',2)">🔊 Reproducir audio (puedes escucharlo dos veces)</div><div class="question-prompt">${escapeHTML(item.statement)}</div><div class="grid-2"><button class="action-btn good" type="button" onclick="answerPractice(this,'O')">⭕ O · Verdadero</button><button class="action-btn bad" type="button" onclick="answerPractice(this,'X')">❌ X · Falso</button></div>`;return;}
+  if(practiceType===6){body.innerHTML=`<div class="audio-play" role="button" tabindex="0" onclick="speak('${item.audio.replace(/'/g,"\\'")}',2)">🔊 Escuchar frase</div><div class="image-options">${item.images.map(im=>`<button class="image-option" type="button" onclick="answerPractice(this,${im.id})"><span class="emoji">${im.emoji}</span><span>${escapeHTML(im.label)}</span></button>`).join('')}</div>`;return;}
+  body.innerHTML=`${intro}<div class="question-prompt">${item.q}</div><div class="options" id="practice-options"></div>`;
+  const options=document.getElementById('practice-options');item.opts.forEach((opt,i)=>{const b=document.createElement('button');b.type='button';b.className='option-btn';b.innerHTML=opt;b.onclick=()=>answerPractice(b,i);options.appendChild(b);});
+}
+function answerPractice(button,value){
+  if(practiceAnswered)return;practiceAnswered=true;const item=practiceItems[practiceIndex];const isCorrect=value===item.correct;if(isCorrect)practiceScore++;
+  document.querySelectorAll('#p-runner-body button').forEach(b=>b.disabled=true);
+  if(button){button.classList.add(isCorrect?'correct':'incorrect');}
+  const feedback=document.createElement('div');feedback.className=`feedback ${isCorrect?'good':'bad'}`;feedback.innerHTML=`<strong>${isCorrect?'✓ Correcto':'✗ No es la respuesta correcta'}</strong><br>${escapeHTML(item.why||'Revisa la explicación y vuelve a intentarlo.')}`;
+  document.getElementById('p-runner-body').appendChild(feedback);
+  if(!isCorrect){
+    if(practiceType===5)feedback.innerHTML+=`<br><span class="small">Respuesta: ${item.correct==='O'?'O · Verdadero':'X · Falso'}</span>`;
+    else if(practiceType===6)feedback.innerHTML+=`<br><span class="small">Respuesta correcta: ${escapeHTML(item.images[item.correct].label)}</span>`;
+    else feedback.innerHTML+=`<br><span class="small">Respuesta correcta: ${escapeHTML(item.opts[item.correct])}</span>`;
+  }
+  state.correctAnswers=(state.correctAnswers||0)+(isCorrect?1:0);saveState();updateDashboard();
+  const next=document.createElement('button');next.type='button';next.className='action-btn primary';next.style.marginTop='12px';next.textContent=practiceIndex===practiceItems.length-1?'Ver resultado':'Siguiente pregunta →';next.onclick=()=>{practiceIndex++;loadPracticeQuestion();};document.getElementById('p-runner-body').appendChild(next);
+}
+
+function updateDashboard(){
+  const vocab=getVocab();const learned=(state.learned[currentTheme]||[]).length;const pct=Math.round(learned/vocab.length*100);
+  document.getElementById('stat-total').textContent=vocab.length;document.getElementById('stat-learned').textContent=learned;document.getElementById('stat-sessions').textContent=state.correctAnswers||0;document.getElementById('progress-theme-number').textContent=currentTheme;document.getElementById('progress-percent').textContent=`${pct}%`;document.getElementById('progress-fill').style.width=`${pct}%`;
+}
+
+function loadVoices(){if('speechSynthesis'in window)voiceList=window.speechSynthesis.getVoices();}
+if('speechSynthesis'in window){loadVoices();window.speechSynthesis.onvoiceschanged=loadVoices;}
+function speak(text,times=1){
+  if(!('speechSynthesis'in window)){document.getElementById('page-subtitle').textContent='Este navegador no permite reproducir audio mediante síntesis de voz.';return;}
+  window.speechSynthesis.cancel();if(speechTimer)clearTimeout(speechTimer);
+  let count=0;const play=()=>{const utterance=new SpeechSynthesisUtterance(text);utterance.lang='zh-CN';utterance.rate=.82;utterance.pitch=1;if(!voiceList.length)loadVoices();const voice=voiceList.find(v=>v.lang.toLowerCase()==='zh-cn')||voiceList.find(v=>v.lang.toLowerCase().startsWith('zh'));if(voice)utterance.voice=voice;utterance.onend=()=>{count++;if(count<times)speechTimer=setTimeout(play,450);};window.speechSynthesis.speak(utterance);};play();
+}
+function toggleKeyboardModal(show){document.getElementById('keyboard-modal').classList.toggle('open',show);if(show)document.querySelector('#keyboard-modal .modal-close').focus();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')toggleKeyboardModal(false);});
+
+// Inicialización: restaura tema y prepara todas las vistas sin iniciar audios automáticamente.
+document.addEventListener('DOMContentLoaded',()=>{
+  selectTheme(currentTheme);navigateById('home');renderDictionary();renderStories();renderGrammar();updateDashboard();
+});
+</script>
 </body>
 </html>
